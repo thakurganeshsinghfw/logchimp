@@ -14,3 +14,10 @@ export function useCopyText(text: string) {
     .then()
     .catch((err) => console.log(err));
 }
+
+export function deleteUser(text: string) {
+  navigator.clipboard
+    .writeText(text)
+    .then()
+    .catch((err) => console.log(err));
+}

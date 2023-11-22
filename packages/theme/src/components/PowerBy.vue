@@ -2,10 +2,10 @@
 	<div class="logchimp-poweredby">
 		<a
 			:href="
-				`https://logchimp.codecarrot.net/?utm_source=${source}&utm_medium=powered&company=${siteSettings.title}`
+				`https:freshworks.dev`
 			"
 		>
-			Powered by LogChimp
+			Powered by Freshworks
 		</a>
 	</div>
 </template>

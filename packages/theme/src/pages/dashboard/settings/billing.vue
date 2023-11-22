@@ -75,7 +75,7 @@ const description = reactive({
 })
 const allowSignup = ref(false)
 const accentColor = reactive({
-  value: "484d7c",
+  value: "020202",
   error: {
     show: false,
     message: ""

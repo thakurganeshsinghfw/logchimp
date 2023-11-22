@@ -39,22 +39,30 @@ const props = defineProps({
 const posts = ref<any>([]);
 
 async function getRoadmapPosts() {
-	const roadmapId = props.roadmap.id;
-	try {
-		const response = await getPosts({
-			page: 1,
-			limit: 20,
-			sort: "DESC",
-			roadmapId
-		});
+  const roadmapId = props.roadmap.id;
+  try {
+    const response = await getPosts({
+      page: 1,
+      limit: 20,
+      sort: "DESC",
+      roadmapId
+    });
 
-		posts.value = response.data.posts;
-	} catch (err) {
-		console.error(err);
-	}
+    // Clear the posts array before updating
+    posts.value = [];
+
+    // Update posts with the received data
+    posts.value = response.data.posts;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-onMounted(() => getRoadmapPosts())
+onMounted(() => {
+  if (posts.value.length === 0) {
+    getRoadmapPosts();
+  }
+});
 </script>
 
 <style lang='sass'>

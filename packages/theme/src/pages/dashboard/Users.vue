@@ -59,6 +59,22 @@
                   </template>
                   Copy ID
                 </dropdown-item>
+                <dropdown-item
+                  @click="deleteUser(user.userId)"
+                >
+                  <template #icon>
+                    <Trash2Icon />
+                  </template>
+                  Delete
+                </dropdown-item>
+                <dropdown-item
+                  @click="deleteUser(user.userId)"
+                >
+                  <template #icon>
+                    <ViewIcon />
+                  </template>
+                  View Roles
+                </dropdown-item>
               </dropdown>
             </template>
           </dropdown-wrapper>
@@ -72,7 +88,8 @@
 
 <script lang="ts">
 export default {
-	name: "DashboardUsers"
+    name: "DashboardUsers",
+    components: { TrashIcon, Trash2Icon, ViewIcon }
 }
 </script>
 
@@ -82,13 +99,17 @@ import { onMounted, ref } from "vue";
 import { useHead } from "@vueuse/head";
 import {
   Clipboard as CopyIcon,
-  MoreHorizontal as MoreIcon
+  DeleteIcon,
+  MoreHorizontal as MoreIcon,
+Trash2Icon,
+TrashIcon,
+ViewIcon
 } from "lucide-vue";
 
 // modules
 import { useSettingStore } from "../../store/settings";
 import { getAllUsers } from "../../modules/users";
-import { useCopyText } from "../../hooks";
+import { useCopyText, deleteUser } from "../../hooks";
 
 // components
 import InfiniteScroll, { InfiniteScrollStateType } from "../../components/ui/InfiniteScroll.vue";

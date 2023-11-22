@@ -6,9 +6,16 @@ const error = require("../../../errorResponse.json");
 
 module.exports = async (req, res) => {
   const { post_id } = req.params;
-  const { per_page = 10, page = 1 } = req.query;
-
+  const { per_page = 10, page = 1, sort } = req.query;
+  
   try {
+
+    let sortOrder = 'DESC'; // Default sort order
+
+    if (sort && sort.toUpperCase() === 'ASC') {
+      sortOrder = 'ASC';
+    }
+
     const activities = await database.raw(
       /* SQL */
       `
@@ -48,7 +55,7 @@ module.exports = async (req, res) => {
       WHERE
         posts_activity.post_id = :post_id
       ORDER BY
-        posts_activity.created_at DESC
+        posts_activity.created_at ${sortOrder}
       LIMIT :limit
       OFFSET :offset
     ;`,

@@ -24,12 +24,12 @@ describe("GET /api/v1/settings/site", () => {
       "Track user feedback to build better products",
     );
     expect(settings.logo).toEqual(
-      "https://cdn.logchimp.codecarrot.net/logchimp_circular_logo.png",
+      "/freshworks.svg",
     );
     expect(settings.icon).toEqual(
-      "https://cdn.logchimp.codecarrot.net/logchimp_circular_logo.png",
+      "/freshworks.svg",
     );
-    expect(settings.accentColor).toEqual("484d7c");
+    expect(settings.accentColor).toEqual("020202");
     expect(settings.googleAnalyticsId).toBeNull();
     expect(settings.isPoweredBy).toBeTruthy();
     expect(settings.allowSignup).toBeTruthy();

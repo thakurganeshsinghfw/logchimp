@@ -45,12 +45,12 @@
           <p>General</p>
         </router-link>
       </li>
-      <li>
+      <!-- <li>
         <router-link to="/dashboard/settings/billing" class="sidebar-list-item">
           <credit-card-icon />
           <p>Billing</p>
         </router-link>
-      </li>
+      </li> -->
       <li>
         <router-link to="/dashboard/settings/roles" class="sidebar-list-item">
           <shield-icon />
@@ -82,13 +82,13 @@
               <template #icon>
                 <info-icon />
               </template>
-              About LogChimp
+              About Freshworks
             </dropdown-item>
             <dropdown-item @click="tweetLogChimp">
               <template #icon>
                 <twitter-icon />
               </template>
-              Tweet @LogChimp!
+              Tweet @Freshworks!
             </dropdown-item>
             <dropdown-spacer />
             <dropdown-item @click="logout">
@@ -147,12 +147,12 @@ const { get: siteSettings } = useSettingStore()
 const { user, logout } = useUserStore()
 
 function aboutLogChimp() {
-	window.open("https://logchimp.codecarrot.net/");
+	window.open("https://freshworks.dev/");
 }
 
 function tweetLogChimp() {
 	window.open(
-		"https://twitter.com/intent/tweet?text=%40LogChimp+Hi%21+Can+you+help+me+with+&related=LogChimp"
+		"https://twitter.com/freshworksinc"
 	);
 }
 </script>

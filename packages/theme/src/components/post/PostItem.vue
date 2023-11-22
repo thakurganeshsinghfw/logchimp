@@ -61,7 +61,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const postData = ref(props.post);
 const dashboardUrl = computed(() => props.dashboard ? "/dashboard" : "");
-const isVoted = computed<boolean>(() => Boolean(props.post.voters?.viewerVote?.voteId))
+const isVoted = computed<boolean>(() => !!props.post.voters?.viewerVote?.voteId);
 
 // TODO: Add TS types
 function updateVoters(voters: VoteEventType) {

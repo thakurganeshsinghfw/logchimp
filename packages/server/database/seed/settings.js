@@ -9,9 +9,9 @@ exports.seed = async function (knex) {
     {
       title: "LogChimp",
       description: "Track user feedback to build better products",
-      accentColor: "484d7c",
-      logo: "https://cdn.logchimp.codecarrot.net/logchimp_circular_logo.png",
-      icon: "https://cdn.logchimp.codecarrot.net/logchimp_circular_logo.png",
+      accentColor: "020202",
+      logo: "/freshworks.svg",
+      icon: "/freshworks.svg",
       isPoweredBy: true,
     },
   ]);

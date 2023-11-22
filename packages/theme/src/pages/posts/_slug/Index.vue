@@ -61,26 +61,26 @@
 				<header class="activity-header">
 					<h6>activity</h6>
 
-					<!-- <div class="activity-sort">
+					<div class="activity-sort">
 							<div
 								class="sort-option"
 								:class="{
-									'sort-option-active': activity.sort === 'desc'
+									'sort-option-active': activity.sort === 'DESC'
 								}"
-								@click="activity.sort = 'desc'"
+								@click="activity.sort = 'DESC'"
 							>
 								Newest
 							</div>
 							<div
 								class="sort-option"
 								:class="{
-									'sort-option-active': activity.sort === 'asc'
+									'sort-option-active': activity.sort === 'ASC'
 								}"
-								@click="activity.sort = 'asc'"
+								@click="activity.sort = 'ASC'"
 							>
 								Oldest
 							</div>
-						</div> -->
+						</div>
 				</header>
 
 				<div v-if="!activity.loading" class="activity-list">
@@ -112,7 +112,7 @@ export default {
 
 <script setup lang="ts">
 // packages
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch, getCurrentInstance } from "vue";
 import { useHead } from "@vueuse/head";
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
@@ -178,7 +178,7 @@ const activity = reactive<{
 	data: []
 })
 
-const isVoted = computed(() => post.voters.hasOwnProperty('viewerVote'));
+const isVoted = computed(() => !!post.voters.viewerVote);
 
 const postAuthorName = computed(() => post.author.name || post.author.username)
 
@@ -243,6 +243,8 @@ async function postBySlug() {
 	}
 }
 
+const instance = getCurrentInstance();
+
 async function submitComment() {
 	if (!commentInput.value) return;
 
@@ -254,7 +256,7 @@ async function submitComment() {
 		});
 
 		commentInput.value = "";
-		activity.data.unshift(response.data.comment);
+		instance?.emit('add-comment', response.data.comment);
 	} catch (error) {
 		console.log(error);
 	}
