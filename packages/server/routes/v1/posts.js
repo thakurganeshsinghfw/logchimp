@@ -13,53 +13,53 @@ const exists = require("../../middlewares/postExists");
 /**
  * @swagger
  * tags:
- *   name: Posts
+ *   name: Posts API
  *   description: Posts
  */
 
 /**
  * @swagger
- * /posts/get:
+ * /api/v1/posts/get:
  *   post:
  *     summary: Get posts
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 
 router.post("/posts/get", post.filterPost);
 
 /**
  * @swagger
- * /posts/slug:
+ * /api/v1/posts/slug:
  *   post:
  *     summary: Get posts Slug
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 router.post("/posts/slug", exists, post.postBySlug);
 
 /**
  * @swagger
- * /posts:
+ * /api/v1/posts:
  *   post:
  *     summary: Create posts
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 router.post("/posts", middleware.apiAuth, post.create);
 
 /**
  * @swagger
- * /posts:
+ * /api/v1/posts:
  *   patch:
  *     summary: posts
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 router.patch("/posts", middleware.apiAuth, exists, post.updatePost);
 
 /**
  * @swagger
- * /posts:
+ * /api/v1/posts:
  *   delete:
  *     summary: Delete posts
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 
 router.delete("/posts", middleware.apiAuth, exists, post.deleteById);
@@ -67,10 +67,10 @@ router.delete("/posts", middleware.apiAuth, exists, post.deleteById);
 // post activity
 /**
  * @swagger
- * /posts/:post_id/activity:
+ * /api/v1/posts/:post_id/activity:
  *   get:
  *     summary: Get posts activity
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 
 router.get("/posts/:post_id/activity", post.activity.get);
@@ -78,10 +78,10 @@ router.get("/posts/:post_id/activity", post.activity.get);
 // post comment
 /**
  * @swagger
- * /posts/:post_id/comments:
+ * /api/v1/posts/:post_id/comments:
  *   post:
  *     summary: Create posts comment
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 router.post(
   "/posts/:post_id/comments",
@@ -91,10 +91,10 @@ router.post(
 
 /**
  * @swagger
- * /posts/:post_id/comments/:comment_id:
+ * /api/v1/posts/:post_id/comments/:comment_id:
  *   put:
  *     summary: Update posts comment
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 
 router.put(
@@ -104,10 +104,10 @@ router.put(
 );
 /**
  * @swagger
- * /posts/:post_id/comments/:comment_id:
+ * /api/v1/posts/:post_id/comments/:comment_id:
  *   delete:
  *     summary: Delete posts comment
- *     tags: [Posts]
+ *     tags: [Posts API]
  */
 
 router.delete(

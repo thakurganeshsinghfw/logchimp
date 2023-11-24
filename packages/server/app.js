@@ -21,13 +21,14 @@ if (!config) {
 
 const swaggerOptions = {
   swaggerDefinition: {
+    openapi: "3.0.0",
     info: {
-      title: 'LogChimp API',
-      description: 'Documentation for LogChimp APIs',
-      version: '1.0.0',
+      title: "Feedback Hub API Docs",
+      version: "0.0.1",
+      description: "API documentation for Feedback Hub",
     },
   },
-  apis: ['./routes/v1/*.js'], // Define paths to your route files
+  apis: ['./routes/v1/*.js'],
 };
 
 

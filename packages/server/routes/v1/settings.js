@@ -30,35 +30,101 @@ const middlewares = require("../../middlewares");
 /**
  * @swagger
  * tags:
- *   name: Settings
+ *   name: Settings API
  *   description: Site Settings
  */
 
 /**
  * @swagger
- * /settings/site:
+ * /api/v1/settings/site:
  *   get:
  *     summary: Get Site Settings
- *     tags: [Settings]
+ *     description: "Retrieve site settings including title, description, accent color, Google Analytics ID, and allow signup status."
+ *     tags: [Settings API]
+ *     responses:
+ *       '200':
+ *         description: "Successful operation"
+ *         schema:
+ *           type: "object"
+ *           properties:
+ *             title:
+ *               type: "string"
+ *             description:
+ *               type: "string"
+ *             accentColor:
+ *               type: "string"
+ *             googleAnalyticsId:
+ *               type: "string"
+ *             allowSignup:
+ *               type: "boolean"
+ *         examples:
+ *           application/json:
+ *             title: "Your Site Title"
+ *             description: "Your Site Description"
+ *             accentColor: "#FFFFFF"
+ *             googleAnalyticsId: "UA-123456789-1"
+ *             allowSignup: true
+ *       '400':
+ *         description: "Bad request - Invalid input data"
+ *       '401':
+ *         description: "Unauthorized - Invalid or missing authentication token"
+ *       '500':
+ *         description: "Internal server error"
  */
-
 router.get("/settings/site", settings.siteSettings);
+
+
 
 /**
  * @swagger
- * /settings/site:
+ * /api/v1/settings/site:
  *   patch:
- *     summary: Settings
- *     tags: [Settings]
+ *     summary: Update site settings
+ *     description: Update site settings including title, description, accent color, Google Analytics ID, and allow signup status.
+ *     tags: [Settings API]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               accentColor:
+ *                 type: string
+ *               googleAnalyticsId:
+ *                 type: string
+ *               allowSignup:
+ *                 type: string
+ *           example:
+ *             title: "Site Title"
+ *             description: "Site Description"
+ *             accentColor: "#FFFFFF"
+ *             googleAnalyticsId: "UA-123456789-1"
+ *             allowSignup: true
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Site settings updated successfully
+ *       '400':
+ *         description: Bad request - Invalid input data
+ *       '401':
+ *         description: Unauthorized - Invalid or missing authentication token
+ *       '500':
+ *         description: Internal server error
  */
 router.patch("/settings/site", middlewares.apiAuth, settings.update);
 
 /**
  * @swagger
- * /settings/update-logo:
+ * /api/v1/settings/update-logo:
  *   post:
  *     summary: Update logo
- *     tags: [Settings]
+ *     tags: [Settings API]
  */
 router.post(
   "/settings/update-logo",
@@ -69,20 +135,20 @@ router.post(
 
 /**
  * @swagger
- * /settings/labs:
+ * /api/v1/settings/labs:
  *   get:
  *     summary: Get Labs Settings
- *     tags: [Settings]
+ *     tags: [Settings API]
  */
 
 router.get("/settings/labs", settings.getLabs);
 
 /**
  * @swagger
- * /settings/labs:
+ * /api/v1/settings/labs:
  *   patch:
  *     summary: Labs Settings
- *     tags: [Settings]
+ *     tags: [Settings API]
  */
 
 router.patch("/settings/labs", middlewares.apiAuth, settings.updateLabs);

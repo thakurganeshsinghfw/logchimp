@@ -13,45 +13,45 @@ const roleExists = require("../../middlewares/roleExists");
 /**
  * @swagger
  * tags:
- *   name: Roles
+ *   name: Roles API
  *   description: Roles
  */
 
 /**
  * @swagger
- * /roles:
+ * /api/v1/roles:
  *   get:
  *     summary: Get Roles
- *     tags: [Roles]
+ *     tags: [Roles API]
  */
 
 router.get("/roles", middleware.apiAuth, roles.get);
 
 /**
  * @swagger
- * /roles/:id:
+ * /api/v1/roles/:id:
  *   get:
  *     summary: Get Roles by ID
- *     tags: [Roles]
+ *     tags: [Roles API]
  */
 router.get("/roles/:id", middleware.apiAuth, roleExists, roles.getOne);
 
 /**
  * @swagger
- * /roles:
+ * /api/v1/roles:
  *   post:
  *     summary: Add Roles
- *     tags: [Roles]
+ *     tags: [Roles API]
  */
 
 router.post("/roles", middleware.apiAuth, roles.create);
 
 /**
  * @swagger
- * /roles:
+ * /api/v1/roles:
  *   patch:
  *     summary: Roles
- *     tags: [Roles]
+ *     tags: [Roles API]
  */
 
 router.patch("/roles", middleware.apiAuth, roleExists, roles.update);
@@ -61,10 +61,10 @@ router.patch("/roles", middleware.apiAuth, roleExists, roles.update);
 // todo: add roleExists middleware
 /**
  * @swagger
- * /roles/:role_id/users/:user_id:
+ * /api/v1/roles/:role_id/users/:user_id:
  *   put:
  *     summary: Update Roles for a user
- *     tags: [Roles]
+ *     tags: [Roles API]
  */
 router.put(
   "/roles/:role_id/users/:user_id",
@@ -77,10 +77,10 @@ router.put(
 // todo: add roleExists middleware
 /**
  * @swagger
- * /roles/:role_id/users/:user_id:
+ * /api/v1/roles/:role_id/users/:user_id:
  *   delete:
  *     summary: Delete Roles for a user
- *     tags: [Roles]
+ *     tags: [Roles API]
  */
 router.delete(
   "/roles/:role_id/users/:user_id",

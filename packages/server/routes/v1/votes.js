@@ -11,26 +11,26 @@ const middleware = require("../../middlewares");
 /**
  * @swagger
  * tags:
- *   name: Votes
+ *   name: Votes API
  *   description: Votes
  */
 
 /**
  * @swagger
- * /votes:
+ * /api/v1/votes:
  *   post:
  *     summary: Add votes
- *     tags: [Votes]
+ *     tags: [Votes API]
  */
 
 router.post("/votes", middleware.apiAuth, votes.add);
 
 /**
  * @swagger
- * /votes:
+ * /api/v1/votes:
  *   delete:
  *     summary: Delete votes
- *     tags: [Votes]
+ *     tags: [Votes API]
  */
 router.delete("/votes", middleware.apiAuth, votes.remove);
 

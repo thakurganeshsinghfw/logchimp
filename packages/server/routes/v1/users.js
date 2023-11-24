@@ -11,53 +11,53 @@ const middleware = require("../../middlewares");
 /**
  * @swagger
  * tags:
- *   name: Users
+ *   name: Users API
  *   description: Users
  */
 
 /**
  * @swagger
- * /users:
+ * /api/v1/users:
  *   get:
  *     summary: Get Users
- *     tags: [Users]
+ *     tags: [Users API]
  */
 
 router.get("/users", users.filter);
 
 /**
  * @swagger
- * /users/profile:
+ * /api/v1/users/profile:
  *   get:
  *     summary: Get Users profile
- *     tags: [Users]
+ *     tags: [Users API]
  */
 router.get("/users/profile", middleware.apiAuth, users.getProfile);
 
 /**
  * @swagger
- * /users/profile:
+ * /api/v1/users/profile:
  *   patch:
  *     summary: Users Profile
- *     tags: [Users]
+ *     tags: [Users API]
  */
 router.patch("/users/profile", middleware.apiAuth, users.updateProfile);
 
 /**
  * @swagger
- * /users/permissions:
+ * /api/v1/users/permissions:
  *   get:
  *     summary: Get Users Permissions
- *     tags: [Users]
+ *     tags: [Users API]
  */
 router.get("/users/permissions", middleware.apiAuth, users.getUserPermissions);
 
 /**
  * @swagger
- * /users/dashboard:
+ * /api/v1/users/dashboard:
  *   get:
  *     summary: Get Users Dashboard
- *     tags: [Users]
+ *     tags: [Users API]
  */
 router.get("/users/dashboard", middleware.apiAuth, users.accessDashboard);
 

@@ -12,85 +12,85 @@ const exists = require("../../middlewares/boardExists");
 /**
  * @swagger
  * tags:
- *   name: Boards
+ *   name: Boards API
  *   description: Boards
  */
 
 /**
  * @swagger
- * /boards:
+ * /api/v1/boards:
  *   get:
  *     summary: Boards
- *     tags: [Boards]
+ *     tags: [Boards API]
  */
 
 router.get("/boards", boards.filter);
 
 /**
  * @swagger
- * /boards/get:
+ * /api/v1/boards/get:
  *   get:
  *     summary: Get Boards
- *     tags: [Boards]
+ *     tags: [Boards API]
  */
 
 router.get("/boards/get", boards.get);
 
 /**
  * @swagger
- * /boards/:url:
+ * /api/v1/boards/:url:
  *   get:
  *     summary: Boards by URL
- *     tags: [Boards]
+ *     tags: [Boards API]
  */
 
 router.get("/boards/:url", exists, boards.boardByUrl);
 
 /**
  * @swagger
- * /boards/search/:name:
+ * /api/v1/boards/search/:name:
  *   get:
  *     summary: Boards by Name
- *     tags: [Boards]
+ *     tags: [Boards API]
  */
 
 router.get("/boards/search/:name", middleware.apiAuth, boards.searchBoard);
 
 /**
  * @swagger
- * /boards/check-name:
+ * /api/v1/boards/check-name:
  *   post:
  *     summary: Check Board Name
- *     tags: [Boards]
+ *     tags: [Boards API]
  */
 
 router.post("/boards/check-name", middleware.apiAuth, boards.checkName);
 
 /**
  * @swagger
- * /boards:
+ * /api/v1/boards:
  *   post:
  *     summary: Create Board
- *     tags: [Boards]
+ *     tags: [Boards API]
  */
 router.post("/boards", middleware.apiAuth, boards.create);
 
 /**
  * @swagger
- * /boards:
+ * /api/v1/boards:
  *   patch:
  *     summary: Boards
- *     tags: [Boards]
+ *     tags: [Boards API]
  */
 
 router.patch("/boards", middleware.apiAuth, exists, boards.updateBoard);
 
 /**
  * @swagger
- * /boards:
+ * /api/v1/boards:
  *   delete:
  *     summary: Delete Boards
- *     tags: [Boards]
+ *     tags: [Boards API]
  */
 
 router.delete("/boards", middleware.apiAuth, exists, boards.deleteById);

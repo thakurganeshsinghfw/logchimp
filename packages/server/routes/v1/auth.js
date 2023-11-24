@@ -13,31 +13,41 @@ const validateEmailToken = require("../../middlewares/validateEmailToken");
 /**
  * @swagger
  * tags:
- *   name: Authentication
+ *   name: Authentication API
  *   description: User authentication endpoints
  */
+
 
 // Endpoint: /auth/signup
 /**
  * @swagger
- * /auth/signup:
+ * /api/v1/auth/signup:
  *   post:
  *     summary: Register a new user
- *     tags: [Authentication]
- *     description: Register a new user with provided details.
+ *     description: Register a new user with email and password.
+ *     tags: [Authentication API]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
  *     responses:
  *       '200':
- *         description: User successfully registered
+ *         description: Successfully registered a new user
  *       '400':
- *         description: Bad request, invalid input data
+ *         description: Invalid input data
  *       '500':
  *         description: Internal server error
  */
-
 router.post("/auth/signup", mailConfigExists, auth.signup);
 
 
@@ -45,15 +55,25 @@ router.post("/auth/signup", mailConfigExists, auth.signup);
 // Endpoint: /auth/login
 /**
  * @swagger
- * /auth/login:
+ * /api/v1/auth/login:
  *   post:
  *     summary: User login
- *     tags: [Authentication]
+ *     tags: [Authentication API]
  *     description: Login with valid credentials.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
  *     responses:
  *       '200':
  *         description: User successfully logged in
@@ -69,28 +89,54 @@ router.post("/auth/login", exists, auth.login);
 // Endpoint: /auth/setup - POST method
 /**
  * @swagger
- * /auth/setup:
+ * /api/v1/auth/setup:
  *   post:
- *     summary: Setup authentication
- *     tags: [Authentication]
- *     description: Set up authentication configuration.
+ *     summary: Setup initial site configuration
+ *     description: Set up initial site configuration including site title, admin name, email, and password.
+ *     tags: [Authentication API]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               siteTitle:
+ *                 type: string
+ *                 description: Title of the site.
+ *               name:
+ *                 type: string
+ *                 description: Admin user's name.
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Admin user's email address.
+ *               password:
+ *                 type: string
+ *                 description: Admin user's password.
+ *             required:
+ *               - siteTitle
+ *               - name
+ *               - email
+ *               - password
  *     responses:
  *       '200':
- *         description: Authentication setup successful
+ *         description: Site setup successful
  *       '400':
- *         description: Bad request, invalid input data
+ *         description: Invalid input data
  *       '500':
  *         description: Internal server error
  */
 router.post("/auth/setup", mailConfigExists, auth.setup);
 
+
 // Endpoint: /auth/setup - GET method
 /**
  * @swagger
- * /auth/setup:
+ * /api/v1/auth/setup:
  *   get:
  *     summary: Check site setup status
- *     tags: [Authentication]
+ *     tags: [Authentication API]
  *     description: Check if the site is already set up for authentication.
  *     responses:
  *       '200':
@@ -100,14 +146,15 @@ router.post("/auth/setup", mailConfigExists, auth.setup);
  */
 router.get("/auth/setup", auth.isSiteSetup);
 
+
 // email
 // Endpoint: /auth/email/verify - POST method
 /**
  * @swagger
- * /auth/email/verify:
+ * /api/v1/auth/email/verify:
  *   post:
  *     summary: Verify email for authentication
- *     tags: [Authentication]
+ *     tags: [Authentication API]
  *     description: Verify email for authentication purposes.
  *     responses:
  *       '200':
@@ -123,10 +170,10 @@ router.post("/auth/email/verify", mailConfigExists, exists, auth.email.verify);
 // Endpoint: /auth/email/validate - POST method
 /**
  * @swagger
- * /auth/email/validate:
+ * /api/v1/auth/email/validate:
  *   post:
  *     summary: Validate email for authentication
- *     tags: [Authentication]
+ *     tags: [Authentication API]
  *     description: Validate email for authentication purposes.
  *     responses:
  *       '200':
@@ -147,10 +194,10 @@ router.post(
 // Endpoint: /auth/password/reset - POST method
 /**
  * @swagger
- * /auth/password/reset:
+ * /api/v1/auth/password/reset:
  *   post:
  *     summary: Reset password
- *     tags: [Authentication]
+ *     tags: [Authentication API]
  */
 
 router.post(
@@ -163,10 +210,10 @@ router.post(
 // Endpoint: /auth/password/validateToken - POST method
 /**
  * @swagger
- * /auth/password/validateToken:
+ * /api/v1/auth/password/validateToken:
  *   post:
  *     summary: Validate token
- *     tags: [Authentication]
+ *     tags: [Authentication API]
  */
 
 router.post(
@@ -179,10 +226,10 @@ router.post(
 // Endpoint: /auth/password/set - POST method
 /**
  * @swagger
- * /auth/password/set:
+ * /api/v1/auth/password/set:
  *   post:
  *     summary: Set Password
- *     tags: [Authentication]
+ *     tags: [Authentication API]
  */
 
 router.post(
