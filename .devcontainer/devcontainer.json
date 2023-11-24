@@ -1,5 +1,5 @@
 {
-  "name": "logchimp",
+  "name": "feedback_hub",
   "build": {
     "dockerfile": "../.gitpod.Dockerfile"
   },

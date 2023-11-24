@@ -95,11 +95,11 @@ useHead({
 	meta: [
 		{
 			name: "generator",
-			content: () => `LogChimp v${logchimpVersion.value}`
+			content: () => `Feedback Hub v${logchimpVersion.value}`
 		},
 		{
 			name: "description",
-			content: () => `${settingsStore.get.description}. Powered By LogChimp.`
+			content: () => `${settingsStore.get.description}. Powered By Freshworks.`
 		},
 		{
 			name: "robots",
@@ -125,7 +125,7 @@ useHead({
 		},
 		{
 			name: "og:description",
-			content: () => `${settingsStore.get.description}. Powered By LogChimp.`
+			content: () => `${settingsStore.get.description}. Powered By Freshworks.`
 		},
 
     {

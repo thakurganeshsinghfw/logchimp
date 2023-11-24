@@ -12,7 +12,7 @@ tasks:
     openMode: tab-after
     command: |
       gp sync-await setup
-      pnpm --filter @logchimp/api dev
+      pnpm --filter @feedback_hub/api dev
   - name: Server (logs)
     openMode: tab-after
     command: |
@@ -30,7 +30,7 @@ tasks:
       # export 'APP_SERVER_URL' ENV to file
       echo APP_SERVER_URL=http://localhost:3000 > .env
 
-      pnpm --filter @logchimp/theme dev
+      pnpm --filter @feedback_hub/theme dev
 
 ports:
   - port: 8080
