@@ -9143,7 +9143,8 @@
   border: 1px solid #000;
   border-radius: 4px;
   box-shadow: 0 0 3px rgba(0,0,0,.19);
-  margin: 0 0 15px
+  margin: 0 0 15px;
+  padding: 3px;
 }
 
 .swagger-ui .opblock .tab-header {
@@ -10822,10 +10823,8 @@
   padding: 10px 0
 }
 
-.swagger-ui .topbar img {
-  content: url('/packages/server/public/api-docs/freshworks.svg');
-}
 .swagger-ui .topbar .topbar-wrapper {
+  content: url('/api-docs/freshworks_dark_logo.svg');
   align-items: center;
   display: flex;
   flex-wrap: wrap;

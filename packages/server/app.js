@@ -76,12 +76,13 @@ app.use(
   "/api-docs",
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, {
+    // explorer: true,
     customCssUrl: "/api-docs/swagger-ui.css",
     customSiteTitle: "Feedback Hub API Docs",
     customfavIcon: "/api-docs/FRSH.png", // Path to your favicon
     swaggerOptions: {
       customfavIcon: "/api-docs/FRSH.png", // Path to your favicon
-      // docExpansion: "none",
+      docExpansion: "none",
     },
   })
 );
