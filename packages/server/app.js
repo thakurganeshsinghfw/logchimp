@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require('path'); // Import the path module
 
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -22,6 +23,9 @@ if (!config) {
   );
   process.exit(1);
 }
+
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -53,8 +57,8 @@ const swaggerOptions = {
     security: [{ bearerAuth: [] }],
   },
   apis: ['./routes/v1/*.js'],
+  customSiteTitle: 'Feedback Hub API Docs',
 };
-
 
 
 // Set the default environment to be `development`
@@ -68,7 +72,18 @@ app.use(express.json());
 app.use(routes);
 
 const swaggerSpec = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCssUrl: "/api-docs/swagger-ui.css",
+    customSiteTitle: "Feedback Hub API Docs",
+    customfavIcon: "/api-docs/FRSH.png", // Path to your favicon
+    swaggerOptions: {
+      customfavIcon: "/api-docs/FRSH.png", // Path to your favicon
+      // docExpansion: "none",
+    },
+  })
+);
 
 module.exports = app;
