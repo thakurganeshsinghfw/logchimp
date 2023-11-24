@@ -5,8 +5,8 @@ exports.up = (knex) => {
   return knex("settings")
     .insert([
       {
-        title: "LogChimp",
-        description: "Track user feedback to build better products",
+        title: "FeedbackHub",
+        description: "Track developer feedback to build better products",
         accentColor: "020202",
         logo: "/freshworks.svg",
         icon: "/freshworks.svg",

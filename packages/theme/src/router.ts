@@ -27,6 +27,16 @@ const routes = [
         component: () => import("./pages/boards/_url.vue"),
       },
       {
+        path: "search",
+        name: "Search",
+        component: () => import("./pages/search/Index.vue"),
+      },
+      {
+        path: "placeholder",
+        name: "Placeholder",
+        component: () => import("./pages/placeholder/Index.vue"),
+      },
+      {
         path: "roadmaps",
         name: "Roadmaps",
         component: () => import("./pages/Roadmaps.vue"),

@@ -1,7 +1,7 @@
 {
-  "name": "@logchimp/theme",
-  "description": "LogChimp default theme",
-  "version": "0.7.0-beta.3",
+  "name": "@feedback_hub/theme",
+  "description": "Feedback Hub Freshworks theme",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "yarn cache clean && vite",

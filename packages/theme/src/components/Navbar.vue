@@ -24,12 +24,28 @@
 				Boards
 			</div>
 		</router-link>
+		<router-link to="/search" class="navbar-item">
+			<div class="navbar-item-icon">
+				<SearchIcon />
+			</div>
+			<div class="navbar-item-content">
+				Search
+			</div>
+		</router-link>
+		<router-link to="/placeholder" class="navbar-item">
+			<div class="navbar-item-icon">
+				<PlaneTakeoffIcon />
+			</div>
+			<div class="navbar-item-content">
+				Placeholder
+			</div>
+		</router-link>
 	</div>
 </template>
 
 <script setup lang="ts">
 // packages
-import { Home as HomeIcon, Columns as BoardIcon } from "lucide-vue";
+import { Home as HomeIcon, Columns as BoardIcon, SearchIcon, PlaneTakeoffIcon } from "lucide-vue";
 
 // icons
 import RoadmapIcon from "./icons/Roadmap.vue";

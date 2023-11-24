@@ -3,7 +3,7 @@ import { themes } from "@storybook/theming";
 
 addons.setConfig({
   theme: themes.light,
-  brandTitle: "LogChimp",
-  brandUrl: "https://logchimp.codecarrot.net/",
+  brandTitle: "Feedback Hub",
+  brandUrl: "https://freshwoks.dev/",
   brandImage: "/freshworks.svg",
 });

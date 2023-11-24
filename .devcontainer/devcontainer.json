@@ -17,6 +17,7 @@
     "1080:1080",
     "1025:1025"
   ],
+
   "portsAttributes": {
     "8080": {
       "label": "Theme"
@@ -35,17 +36,22 @@
     }
   },
 
-  // Visual Studio Code extensions
-  "extensions": [
-    "biomejs.biome",
-    "wix.vscode-import-cost",
-    "bradlc.vscode-tailwindcss",
-    "Vue.volar",
-    "editorconfig.editorconfig",
-    "ZixuanChen.vitest-explorer",
-    "syler.sass-indented",
-    "eamodio.gitlens"
-  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "biomejs.biome",
+        "wix.vscode-import-cost",
+        "bradlc.vscode-tailwindcss",
+        "Vue.volar",
+        "editorconfig.editorconfig",
+        "ZixuanChen.vitest-explorer",
+        "syler.sass-indented",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+      }
+    }
+  },
 
   "postCreateCommand": "bash ../scripts/gitpod-init.sh"
 }

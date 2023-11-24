@@ -2,7 +2,7 @@ Here is a general outline of what you might find in the codebase:
 
 1. Frontend (Client-side):
 
-   1. Vue.js or Nuxt.js: LogChimp might use Vue.js as its frontend framework, enabling the development of interactive user interfaces.
+   1. Vue.js: LogChimp might use Vue.js as its frontend framework, enabling the development of interactive user interfaces. Uses Lucide Vue UI.
    2. Components: Contains reusable components used throughout the application.
    3. Views or Pages: Contains different views or pages of the application, such as changelog creation, changelog display, authentication pages, etc.
    4. API Calls: Handles communication with the backend API endpoints.

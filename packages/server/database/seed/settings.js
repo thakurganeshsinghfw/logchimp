@@ -7,8 +7,8 @@ exports.seed = async function (knex) {
   await knex("settings").del();
   await knex("settings").insert([
     {
-      title: "LogChimp",
-      description: "Track user feedback to build better products",
+      title: "Feedback Hub",
+      description: "Track developer feedback to build better products",
       accentColor: "020202",
       logo: "/freshworks.svg",
       icon: "/freshworks.svg",
