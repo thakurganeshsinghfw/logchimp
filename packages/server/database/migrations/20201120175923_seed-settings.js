@@ -7,7 +7,7 @@ exports.up = (knex) => {
       {
         title: "FeedbackHub",
         description: "Track developer feedback to build better products",
-        accentColor: "020202",
+        accentColor: "0b1320",
         logo: "/freshworks.svg",
         icon: "/freshworks.svg",
         isPoweredBy: true,

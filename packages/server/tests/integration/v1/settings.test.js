@@ -29,7 +29,7 @@ describe("GET /api/v1/settings/site", () => {
     expect(settings.icon).toEqual(
       "/freshworks.svg",
     );
-    expect(settings.accentColor).toEqual("020202");
+    expect(settings.accentColor).toEqual("0b1320");
     expect(settings.googleAnalyticsId).toBeNull();
     expect(settings.isPoweredBy).toBeTruthy();
     expect(settings.allowSignup).toBeTruthy();

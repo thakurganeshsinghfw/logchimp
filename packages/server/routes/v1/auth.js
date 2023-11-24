@@ -43,6 +43,26 @@ const validateEmailToken = require("../../middlewares/validateEmailToken");
  *     responses:
  *       '200':
  *         description: Successfully registered a new user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     authToken:
+ *                       type: string
+ *                     userId:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     username:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     avatar:
+ *                       type: string
  *       '400':
  *         description: Invalid input data
  *       '500':
@@ -76,7 +96,27 @@ router.post("/auth/signup", mailConfigExists, auth.signup);
  *               - password
  *     responses:
  *       '200':
- *         description: User successfully logged in
+ *         description: Successfully registered a new user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     authToken:
+ *                       type: string
+ *                     userId:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     username:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     avatar:
+ *                       type: string
  *       '400':
  *         description: Bad request, invalid input data
  *       '500':
@@ -141,6 +181,13 @@ router.post("/auth/setup", mailConfigExists, auth.setup);
  *     responses:
  *       '200':
  *         description: Site setup status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  is_setup:
+ *                    type: boolean
  *       '500':
  *         description: Internal server error
  */
@@ -155,10 +202,28 @@ router.get("/auth/setup", auth.isSiteSetup);
  *   post:
  *     summary: Verify email for authentication
  *     tags: [Authentication API]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *             required:
+ *               - email
  *     description: Verify email for authentication purposes.
  *     responses:
  *       '200':
  *         description: Email verification successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  verify:
+ *                    type: object
  *       '400':
  *         description: Bad request, invalid input data
  *       '500':
@@ -172,14 +237,39 @@ router.post("/auth/email/verify", mailConfigExists, exists, auth.email.verify);
  * @swagger
  * /api/v1/auth/email/validate:
  *   post:
- *     summary: Validate email for authentication
+ *     summary: Validate user email
  *     tags: [Authentication API]
- *     description: Validate email for authentication purposes.
+ *     description: Validates user email based on the provided email token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *             required:
+ *               - token
  *     responses:
  *       '200':
- *         description: Email validation successful
+ *         description: Email verified successfully
  *       '400':
- *         description: Bad request, invalid input data
+ *         description: Invalid or expired email verification token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ *                       code:
+ *                         type: string
  *       '500':
  *         description: Internal server error
  */
@@ -196,8 +286,41 @@ router.post(
  * @swagger
  * /api/v1/auth/password/reset:
  *   post:
- *     summary: Reset password
+ *     summary: Request password reset
+ *     description: Initiates a password reset request based on the provided email.
  *     tags: [Authentication API]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *             required:
+ *               - email
+ *     responses:
+ *       '200':
+ *         description: Password reset request successful
+ *       '400':
+ *         description: Invalid or non-existent email address
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ *                       code:
+ *                         type: string
+ *       '500':
+ *         description: Internal server error
  */
 
 router.post(
@@ -212,9 +335,45 @@ router.post(
  * @swagger
  * /api/v1/auth/password/validateToken:
  *   post:
- *     summary: Validate token
+ *     summary: Validate reset password token
+ *     description: Validates the reset password token.
  *     tags: [Authentication API]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *             required:
+ *               - token
+ *     responses:
+ *       '200':
+ *         description: Reset password token is valid
+ *       '400':
+ *         description: Invalid or expired reset password token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 code:
+ *                   type: string
+ *                 err:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     message:
+ *                       type: string
+ *       '500':
+ *         description: Internal server error
  */
+
 
 router.post(
   "/auth/password/validateToken",
@@ -229,7 +388,45 @@ router.post(
  * /api/v1/auth/password/set:
  *   post:
  *     summary: Set Password
+ *     description: Set a new password using the reset password token.
  *     tags: [Authentication API]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required:
+ *               - token
+ *               - password
+ *     responses:
+ *       '200':
+ *         description: Password successfully updated
+ *       '400':
+ *         description: Invalid or expired reset password token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 code:
+ *                   type: string
+ *                 err:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     message:
+ *                       type: string
+ *       '500':
+ *         description: Internal server error
  */
 
 router.post(
