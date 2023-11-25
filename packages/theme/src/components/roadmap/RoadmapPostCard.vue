@@ -7,7 +7,7 @@
         <div class="post-card-section">
           <div>
             <router-link data-test="post-link" :to="`/posts/${post.slug}`">
-              <h5>{{ post.title }}</h5>
+              <h6>{{ post.title }}</h6>
             </router-link>
             <span v-if="!isExpanded" data-test="post-board-name" class="post-card-board">
               {{ post.board.name }}

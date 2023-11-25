@@ -178,7 +178,7 @@ const activity = reactive<{
 	data: []
 })
 
-const isVoted = computed(() => !!post.voters.viewerVote);
+const isVoted = computed<boolean>(() => !!post.voters.viewerVote);
 
 const postAuthorName = computed(() => post.author.name || post.author.username)
 

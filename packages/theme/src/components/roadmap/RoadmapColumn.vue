@@ -21,11 +21,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-
-// modules
 import { getPosts } from "../../modules/posts";
-
-// components
 import RoadmapPostCard from "./RoadmapPostCard.vue";
 
 const props = defineProps({
@@ -33,9 +29,8 @@ const props = defineProps({
 		type: Object,
 		required: true
 	}
-})
+});
 
-// TODO: Add TS types
 const posts = ref<any>([]);
 
 async function getRoadmapPosts() {
@@ -48,9 +43,6 @@ async function getRoadmapPosts() {
       roadmapId
     });
 
-    // Clear the posts array before updating
-    posts.value = [];
-
     // Update posts with the received data
     posts.value = response.data.posts;
   } catch (err) {
@@ -59,6 +51,7 @@ async function getRoadmapPosts() {
 }
 
 onMounted(() => {
+  // Check if posts have not been loaded for this roadmap
   if (posts.value.length === 0) {
     getRoadmapPosts();
   }

@@ -41,20 +41,34 @@ const roadmaps = ref<any>([])
 const page = ref<number>(1)
 const state = ref<InfiniteScrollStateType>();
 
+interface Roadmap {
+  id: string;
+  name: string;
+  url: string;
+  color: string;
+}
+
 async function getRoadmaps() {
   state.value = "LOADING";
 
   try {
     const response = await getAllRoadmaps();
-    roadmaps.value = response.data.roadmaps;
 
-    if (response.data.roadmaps.length) {
-			roadmaps.value.push(...response.data.roadmaps);
-			page.value += 1;
-			state.value = "LOADED"
-		} else {
-			state.value = "COMPLETED";
-		}
+    // Check if the retrieved roadmaps are unique
+    const uniqueRoadmaps: Roadmap[] = response.data.roadmaps.filter((newRoadmap: Roadmap) => {
+      return !roadmaps.value.some((existingRoadmap: Roadmap) => existingRoadmap.id === newRoadmap.id);
+    });
+
+    // Append only unique roadmaps to the existing ones
+    roadmaps.value.push(...uniqueRoadmaps);
+
+    // Update the state based on the retrieval result
+    if (uniqueRoadmaps.length > 0) {
+      page.value += 1;
+      state.value = "LOADED";
+    } else {
+      state.value = "COMPLETED";
+    }
   } catch (err) {
     console.error(err);
     state.value = "ERROR";
