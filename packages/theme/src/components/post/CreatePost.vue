@@ -99,15 +99,15 @@ const props = defineProps({
 	},
 	category: {
     type: String,
-    required: true,
+    required: false,
   },
   categoryOptions: {
 	type: Array as () => Array<{ label: string; value: string }>,
-    required: true,
+    required: false,
   },
   severityOptions: {
 	type: Array as () => Array<{ label: string; value: string }>,
-    required: true,
+    required: false,
   },
   createPostPermissionDisabled: Boolean,
 })

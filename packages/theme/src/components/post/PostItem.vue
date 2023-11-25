@@ -83,7 +83,7 @@ function updateVoters(voters: VoteEventType) {
 	text-decoration: none
 
 .post-content-title
-	color: var(--color-text-black)
+	color: var(--color-text-link)
 	margin-bottom: 0
 
 .post-roadmap
