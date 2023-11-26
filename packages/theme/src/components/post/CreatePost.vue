@@ -85,6 +85,7 @@ import Button from "../ui/Button.vue";
 import validateUUID from "../../utils/validateUUID";
 import tokenError from "../../utils/tokenError";
 
+
 const { permissions } = useUserStore()
 
 const props = defineProps({

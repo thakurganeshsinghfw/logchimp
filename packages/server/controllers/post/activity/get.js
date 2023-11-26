@@ -6,8 +6,8 @@ const error = require("../../../errorResponse.json");
 
 module.exports = async (req, res) => {
   const { post_id } = req.params;
-  const { per_page = 10, page = 1, sort } = req.query;
-  
+  const { per_page = 20, page = 1, sort } = req.query;
+
   try {
 
     let sortOrder = 'DESC'; // Default sort order

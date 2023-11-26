@@ -5,6 +5,12 @@ const database = require("../../../database");
 // utils
 const logger = require("../../../utils/logger");
 const error = require("../../../errorResponse.json");
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+// Create DOMPurify instance
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
 
 module.exports = async (req, res) => {
   const userId = req.user.userId;
@@ -13,6 +19,7 @@ module.exports = async (req, res) => {
 
   // check auth user has required permission to set comment as internal
   // check the auth user has permission to comment
+  const sanitizedBody = DOMPurify.sanitize(body);
 
   try {
     const labSettings = await database
@@ -35,7 +42,7 @@ module.exports = async (req, res) => {
         {
           id: uuid(),
           parent_id,
-          body,
+          body: sanitizedBody, // Use sanitized content
           activity_id: postActivityId,
           is_internal,
           created_at: new Date().toJSON(),

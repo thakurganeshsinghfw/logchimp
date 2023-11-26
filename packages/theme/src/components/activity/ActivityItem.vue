@@ -4,7 +4,7 @@
 
 		<div :class="$style.content">
 			<h6>{{ activity.author.name }}</h6>
-			<p>{{ activity.comment.body }}</p>
+			<div v-html="activity.comment.body" />
 
 			<time
 				:datetime="activity.created_at"

@@ -84,7 +84,7 @@ export const createPost = async (boardId: string, post: CreatePostArgs) => {
  */
 export const getPosts = async ({
   page = 1,
-  limit = 10,
+  limit = 20,
   sort = "DESC",
   boardId = [],
   roadmapId = "",

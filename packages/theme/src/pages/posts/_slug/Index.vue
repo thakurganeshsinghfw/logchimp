@@ -84,11 +84,10 @@
 				</header>
 
 				<div v-if="!activity.loading" class="activity-list">
-					<activity-item
-						v-for="item in activity.data"
-						:key="item.id"
-						:activity="item"
-					/>
+          <activity-item v-for="(item, index) in displayedComments" :key="item.id" :activity="item" />
+          <div v-if="hasMoreComments" class="load-more-btn">
+            <button @click="loadMoreComments">Load More</button>
+          </div>
 				</div>
 				<div v-else class="loader-container">
 					<loader />
@@ -163,14 +162,23 @@ const postLoading = ref(false)
 const isPostExist = ref(false)
 
 // comments
-const commentInput = ref("");
-const submittingComment = ref(false);
+const comments = reactive<any[]>([]); // Replace `any` with appropriate comment type
+const page = ref<number>(1);
+// show 5 comments out of 20
+const pageSize = 5;
+
+const displayedComments = computed(() => comments.slice(0, page.value * pageSize));
+const hasMoreComments = computed(() => comments.length > page.value * pageSize);
+
+async function loadMoreComments() {
+  page.value++;
+  await getPostActivity(activity.sort); // Update the activity based on pagination
+}
 
 // activity
 const activity = reactive<{
 	loading: boolean
 	sort: ApiSortType
-	// TODO: Add TS types
 	data: any
 }>({
 	loading: false,
@@ -204,6 +212,8 @@ async function getPostActivity(sort: ApiSortType = "DESC") {
 		});
 
 		activity.data = response.data.activity;
+    comments.splice(0, comments.length, ...response.data.activity);
+
 	} catch (error) {
 		console.log(error);
 	} finally {
