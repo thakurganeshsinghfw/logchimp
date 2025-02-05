@@ -1,106 +1,84 @@
 <template>
-	<div v-if="!postLoading">
-		<div v-if="isPostExist" class="viewpost">
-			<div class="viewpost__vote">
+  <div v-if="postLoading">
+    <loader />
+  </div>
+  <div v-else>
+    <div v-if="isPostExist" class="viewpost">
+      <div class="viewpost__vote">
 				<div>
 					<vote
 						:post-id="post.postId"
-						:votes-count="post.voters.votesCount"
+						:votes-count="post.voters?.votesCount ?? 0"
 						:is-voted="isVoted"
 						@update-voters="updateVoters"
 					/>
 				</div>
-				<div class="viewpost__content">
-					<h2 class="viewpost__title">
-						{{ post.title }}
-					</h2>
-					<div class="viewpost__meta">
-						<div class="viewpost__meta-author">
-							<avatar
-								class="viewpost__author-avatar"
-								:src="post.author.avatar"
-								:name="postAuthorName"
-							/>
-							{{ postAuthorName }}
-						</div>
-						<div class="viewpost__meta-divider">|</div>
-						<time
-							:datetime="post.createdAt"
-							:title="dayjs(post.createdAt).format('dddd, DD MMMM YYYY hh:mm')"
-							class="post-date"
-						>
-							{{ dayjs(post.createdAt).fromNow() }}
-						</time>
-						<dropdown-wrapper v-if="postAuthor" class="viewpost__menu">
-							<template #toggle>
-								<div class="dropdown-menu-icon">
-									<more-icon />
-								</div>
-							</template>
-							<template #default="dropdown">
-								<dropdown v-if="dropdown.active" class="viewpost__menu-dropdown">
-									<dropdown-item @click="editPost">
-										<template #icon>
-											<edit-icon />
-										</template>
-										Edit
-
-									</dropdown-item>
-								</dropdown>
-							</template>
-						</dropdown-wrapper>
-					</div>
-				</div>
-			</div>
-
-			<p v-html="postContent" />
-
-			<div v-if="showPostActivity" class="activity-section">
-				<add-comment @add-comment="addComment" :post-id="post.postId" />
-
-				<header class="activity-header">
-					<h6>activity</h6>
-
-					<div class="activity-sort">
-							<div
-								class="sort-option"
-								:class="{
-									'sort-option-active': activity.sort === 'DESC'
-								}"
-								@click="activity.sort = 'DESC'"
-							>
-								Newest
-							</div>
-							<div
-								class="sort-option"
-								:class="{
-									'sort-option-active': activity.sort === 'ASC'
-								}"
-								@click="activity.sort = 'ASC'"
-							>
-								Oldest
-							</div>
-						</div>
-				</header>
-
-				<div v-if="!activity.loading" class="activity-list">
-          <activity-item v-for="(item, index) in displayedComments" :key="item.id" :activity="item" />
-          <div v-if="hasMoreComments" class="load-more-btn">
-            <button @click="loadMoreComments">Load More</button>
+        <div class="viewpost__content">
+          <h2 class="viewpost__title">{{ post.title || 'Untitled Post' }}</h2>
+          <div class="viewpost__meta">
+            <div class="viewpost__meta-author">
+              <avatar class="viewpost__author-avatar" :src="post.author?.avatar" :name="postAuthorName" />
+              {{ postAuthorName }}
+            </div>
+            <div class="viewpost__meta-divider">|</div>
+            <time :datetime="post.createdAt" :title="dayjs(post.createdAt).format('dddd, DD MMMM YYYY hh:mm')" class="post-date">
+              {{ dayjs(post.createdAt).fromNow() }}
+            </time>
+            <dropdown-wrapper v-if="postAuthor" class="viewpost__menu">
+              <template #toggle>
+                <div class="dropdown-menu-icon">
+                  <more-icon />
+                </div>
+              </template>
+              <template #default="dropdown">
+                <dropdown v-if="dropdown.active" class="viewpost__menu-dropdown">
+                  <dropdown-item @click="editPost">
+                    <template #icon>
+                      <edit-icon />
+                    </template>
+                    Edit
+                  </dropdown-item>
+                </dropdown>
+              </template>
+            </dropdown-wrapper>
           </div>
-				</div>
-				<div v-else class="loader-container">
-					<loader />
-				</div>
-			</div>
-		</div>
-		<p v-else>
-			There is no such post.
-		</p>
-	</div>
-	<div v-else class="loader-container">
-		<loader />
-	</div>
+        </div>
+      </div>
+
+      <p v-html="postContent" v-if="postContent" />
+      <div v-else>No content found</div>
+
+      <div v-if="showPostActivity" class="activity-section">
+        <add-comment @add-comment="handleAddComment" :post-id="post.postId" />
+
+        <header class="activity-header">
+          <h6>activity</h6>
+          <div class="activity-sort">
+            <div class="sort-option" :class="{ 'sort-option-active': activity.sort === 'DESC' }" @click="activity.sort = 'DESC'">
+              Newest
+            </div>
+            <div class="sort-option" :class="{ 'sort-option-active': activity.sort === 'ASC' }" @click="activity.sort = 'ASC'">
+              Oldest
+            </div>
+          </div>
+        </header>
+
+        <div v-if="!activity.loading" class="activity-list">
+        <activity-item v-for="(item, index) in displayedComments" :key="item.id" :activity="item" />
+        <div v-if="hasMoreComments" class="load-more-btn">
+          <button @click="loadMoreComments">Load More</button>
+        </div>
+        </div>
+        <div v-else class="loader-container">
+          <loader />
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <p v-if="!postLoading && !isPostExist">There is no such post.</p>
+      <p v-else>Error loading post.</p>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -162,13 +140,13 @@ const postLoading = ref(false)
 const isPostExist = ref(false)
 
 // comments
-const comments = reactive<any[]>([]); // Replace `any` with appropriate comment type
-const page = ref<number>(1);
+const comments = ref([]); //Make this ref so that comments array change triggers reactivity
+const page = ref(1);
 // show 5 comments out of 20
 const pageSize = 5;
 
-const displayedComments = computed(() => comments.slice(0, page.value * pageSize));
-const hasMoreComments = computed(() => comments.length > page.value * pageSize);
+const displayedComments = computed(() => comments.value.slice(0, page.value * pageSize));
+const hasMoreComments = computed(() => comments.value.length > page.value * pageSize);
 
 async function loadMoreComments() {
   page.value++;
@@ -202,23 +180,28 @@ const showPostActivity = computed(() => {
 	return labs.comments;
 })
 
+async function handleAddComment(newComment) {
+  // Add the new comment to the beginning of the array
+  comments.value.unshift(newComment);
+  // Re-fetch the comments to update the displayed list
+  await getPostActivity(activity.sort);
+}
+
 async function getPostActivity(sort: ApiSortType = "DESC") {
-	activity.loading = true;
-
-	try {
-		const response = await postActivity({
-			post_id: post.postId,
-			sort
-		});
-
-		activity.data = response.data.activity;
-    comments.splice(0, comments.length, ...response.data.activity);
-
-	} catch (error) {
-		console.log(error);
-	} finally {
-		activity.loading = false;
-	}
+  activity.loading = true;
+  try {
+    const response = await postActivity({ post_id: post.postId, sort });
+    if (response.data && response.data.activity) {
+      comments.value = response.data.activity; //Update comments ref
+      activity.data = response.data.activity;
+    } else {
+      console.error("No activity found for this post.");
+    }
+  } catch (error) {
+    console.error("Error fetching post activity:", error);
+  } finally {
+    activity.loading = false;
+  }
 }
 
 // Get post activity on changing sort
