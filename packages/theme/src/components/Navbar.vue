@@ -32,12 +32,12 @@
 				Search
 			</div>
 		</router-link>
-		<router-link to="/placeholder" class="navbar-item">
+		<router-link to="/analytics" class="navbar-item">
 			<div class="navbar-item-icon">
 				<PlaneTakeoffIcon />
 			</div>
 			<div class="navbar-item-content">
-				Placeholder
+				Analytics
 			</div>
 		</router-link>
 	</div>

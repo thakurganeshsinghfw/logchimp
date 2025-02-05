@@ -238,22 +238,22 @@ async function postBySlug() {
 
 const instance = getCurrentInstance();
 
-async function submitComment() {
-	if (!commentInput.value) return;
+// async function submitComment() {
+// 	if (!commentInput.value) return;
 
-	try {
-		const response = await addComment({
-			post_id: post.postId,
-			body: commentInput.value,
-			is_internal: false
-		});
+// 	try {
+// 		const response = await addComment({
+// 			post_id: post.postId,
+// 			body: commentInput.value,
+// 			is_internal: false
+// 		});
 
-		commentInput.value = "";
-		instance?.emit('add-comment', response.data.comment);
-	} catch (error) {
-		console.log(error);
-	}
-}
+// 		commentInput.value = "";
+// 		instance?.emit('add-comment', response.data.comment);
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// }
 
 function updateVoters(voters: VoteEventType) {
 	post.voters.votesCount = voters.votesCount;

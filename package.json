@@ -19,15 +19,17 @@
 		"biome:format": "biome format --write ."
 	},
 	"dependencies": {
-		"dotenv": "16.3.1"
+		"chart.js": "^4.4.7",
+		"dotenv": "16.3.1",
+		"vue-chartjs": "^5.3.2"
 	},
 	"devDependencies": {
-		"nodemon": "3.0.1",
-		"@biomejs/biome": "1.2.2"
+		"@biomejs/biome": "1.2.2",
+		"nodemon": "3.0.1"
 	},
 	"keywords": [
 		"freshwoks",
-    "feedback_hub",
+		"feedback_hub",
 		"feedback"
 	],
 	"engines": {

@@ -44,6 +44,13 @@ interface AddCommentArgs {
   is_internal?: boolean;
 }
 
+interface SearchPostsArgs {
+  query: string;
+  board?: string;
+  roadmap?: string;
+}
+
+
 /**
  * Create post
  *
@@ -167,6 +174,26 @@ export const postActivity = async ({ post_id, sort }: PostActivityArgs) => {
     url: `/api/v1/posts/${post_id}/activity`,
     params: {
       sort,
+    },
+  });
+};
+
+/**
+ * Search posts
+ *
+ * @param {object} searchParams
+ * @param {string} searchParams.query search query
+ * @param {string} [searchParams.board] board filter
+ * @param {string} [searchParams.roadmap] roadmap filter
+ */
+export const searchPosts = async ({ query, board, roadmap }: SearchPostsArgs) => {
+  return await axios({
+    method: "GET",
+    url: "/api/v1/posts/search",
+    params: {
+      q: query,
+      board,
+      roadmap,
     },
   });
 };

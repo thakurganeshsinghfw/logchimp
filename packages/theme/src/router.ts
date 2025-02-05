@@ -32,9 +32,9 @@ const routes = [
         component: () => import("./pages/search/Index.vue"),
       },
       {
-        path: "placeholder",
-        name: "Placeholder",
-        component: () => import("./pages/placeholder/Index.vue"),
+        path: "analytics",
+        name: "Analytics",
+        component: () => import("./pages/analytics/Index.vue"),
       },
       {
         path: "roadmaps",

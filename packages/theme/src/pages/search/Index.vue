@@ -1,139 +1,227 @@
-  <template>
-    <div>
-      <div class="flex justify-between items-center">
-    <div class="w-2/3 pr-4">
-      <!-- Input for search -->
+<template>
+  <div class="search-container">
+    <h1>Search Posts</h1>
+    <div class="search-bar">
       <input
         type="text"
-        v-model="searchQuery"
-        placeholder="Search posts ..."
-        @input="performSearch"
-        class="border p-2 w-full"
+        v-model="query"
+        @input="onSearch"
+        placeholder="Search..."
+        class="search-input"
       />
+      <button v-if="query" @click="clearSearch" class="clear-button">✕</button>
     </div>
-    <div class="w-1/3 border p-2">
-      <dropdown-wrapper v-if="boards.length > 0">
-        <!-- Dropdown toggle with Lucide dropdown icon -->
-        <template #toggle>
-          <div class="flex items-center">
-            <span>Boards</span>
-            <ArrowDown />
-          </div>
-        </template>
-        <!-- Dropdown content -->
-        <template #default="dropdown">
-          <dropdown v-if="dropdown.active">
-            <dropdown-item v-for="board in boards" :key="board.boardId" @click="selectBoard(board)">
-              {{ board.name }} <span class="border p-1">  <b>{{ board.post_count }}</b> Posts</span>
-            </dropdown-item>
-          </dropdown>
-        </template>
-      </dropdown-wrapper>
-      <span v-else>Loading...</span>
+    <div class="filters">
+      <label>
+        Board:
+        <select v-model="board" class="filter-select">
+          <option value="">All Boards</option>
+          <option v-for="board in boards" :key="board.boardId" :value="board.boardId">{{ board.name }}</option>
+        </select>
+      </label>
+      <label>
+        Roadmap:
+        <select v-model="roadmap" class="filter-select">
+          <option value="">All Roadmaps</option>
+          <option v-for="roadmap in roadmaps" :key="roadmap.id" :value="roadmap.id">{{ roadmap.name }}</option>
+        </select>
+      </label>
+    </div>
+    <div v-if="loading" class="loading">Loading...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="results.length === 0" class="no-results">No results found</div>
+    <div v-else class="results">
+      <div v-for="result in results" :key="result.id" class="result-item">
+        <h2>{{ result.title }}</h2>
+        <p>{{ result.description }}</p>
+      </div>
     </div>
   </div>
-  <div class="search-results">
-      <div v-if="searchResults.length === 0 && searchQuery.length > 0">
-        No results found.
-      </div>
-      <ul v-else>
-        <li v-for="(result, index) in searchResults" :key="index">
-          <!-- Display search results here -->
-          {{ result.title }}
-        </li>
-      </ul>
-    </div>
-    </div>
-  </template>
-  
-  
+</template>
+
 <script setup lang="ts">
-// packages
-import { ref, onMounted } from 'vue';
-import { useHead } from "@vueuse/head";
-import { getPublicBoards } from "../../modules/boards";
-import DropdownWrapper from "../../components/ui/dropdown/DropdownWrapper.vue";
-import Dropdown from "../../components/ui/dropdown/Dropdown.vue";
-import DropdownItem from "../../components/ui/dropdown/DropdownItem.vue";
-import { ArrowDown } from 'lucide-vue';
-
-// modules
-import { useSettingStore } from "../../store/settings"
-
-
-const { get: siteSettings } = useSettingStore()
-
+import { ref, watch, onMounted } from 'vue';
+import { searchPosts } from '../../modules/posts';
+import { getAllBoards } from '../../modules/boards';
+import { getAllRoadmaps } from '../../modules/roadmaps';
 
 interface SearchResult {
+  id: number;
   title: string;
+  description: string;
 }
-  const searchQuery = ref('');
-  const searchResults = ref<SearchResult[]>([]); // Explicitly specifying the type
-  
-  // Function to perform search based on the input query
-  const performSearch = () => {
-    searchResults.value = performSearchQuery(searchQuery.value);
-  };
-  
-  // Function placeholder - replace with actual search logic
-  const performSearchQuery = (query: string) => {
-    // Simulated search results - replace with actual search functionality
-    const results = [
-      { title: 'Result 1' },
-      { title: 'Result 2' },
-      { title: 'Result 3' },
-    ];
-  
-    // Filter results based on the search query
-    return results.filter(result =>
-      result.title.toLowerCase().includes(query.toLowerCase())
-    );
-  };
 
-  interface Board {
+interface Board {
   boardId: string;
   name: string;
   color: string;
   url: string;
-  post_count: number;
+  display: boolean;
+  post_count: string;
 }
 
+interface Roadmap {
+  id: string;
+  name: string;
+  url: string;
+  color: string;
+}
+
+const query = ref('');
+const board = ref('');
+const roadmap = ref('');
+const results = ref<SearchResult[]>([]);
 const boards = ref<Board[]>([]);
+const roadmaps = ref<Roadmap[]>([]);
+const loading = ref(false);
+const error = ref('');
 
-  const page = ref<number>(1)
-
-// Fetch boards from the API and update the boards list
-const fetchBoardsData = async () => {
+const fetchBoards = async () => {
   try {
-    const response = await getPublicBoards({ page: page.value, sort: "DESC" });
-    boards.value = response.data.boards;
-  } catch (error) {
-    console.error('Error fetching boards:', error);
+    const response = await getAllBoards({ page: 1, limit: 10, sort: "DESC" });
+    console.log('Boards API response:', response.data); // Debugging log
+    boards.value = response.data.boards; // Access the boards property
+    console.log('Boards ref:', boards.value); // Debugging log
+  } catch (err) {
+    console.error('Error fetching boards:', err);
   }
 };
-onMounted(() => {
-  fetchBoardsData();
-});
 
-const selectBoard = (board: { boardId: string; name: string }) => {
-  // Implement logic to handle board selection
-  console.log('Selected board:', board);
+const fetchRoadmaps = async () => {
+  try {
+    const response = await getAllRoadmaps({ page: 1, limit: 10, sort: "DESC" });
+    console.log('Roadmaps API response:', response.data); // Debugging log
+    roadmaps.value = response.data.roadmaps; // Access the roadmaps property
+    console.log('Roadmaps ref:', roadmaps.value); // Debugging log
+  } catch (err) {
+    console.error('Error fetching roadmaps:', err);
+  }
 };
 
-useHead({
-	title: "Search",
-	meta: [
-		{
-			name: "og:title",
-			content: () => `Search • ${siteSettings.title}`
-		}
-	]
-})
+const onSearch = async () => {
+  loading.value = true;
+  error.value = '';
+
+  try {
+    const response = await searchPosts({
+      query: query.value,
+      board: board.value,
+      roadmap: roadmap.value
+    });
+    results.value = response.data;
+  } catch (err) {
+    console.error('Error fetching search results:', err);
+    error.value = 'Failed to fetch search results. Please try again.';
+  } finally {
+    loading.value = false;
+  }
+};
+
+const clearSearch = () => {
+  query.value = '';
+  board.value = '';
+  roadmap.value = '';
+  results.value = [];
+};
+
+watch([board, roadmap], () => {
+  onSearch();
+});
+
+onMounted(() => {
+  fetchBoards();
+  fetchRoadmaps();
+});
 </script>
 
-<style>
-.dropdown-wrapper
-{	position: relative
+<style scoped>
+.search-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 40px 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
+.clear-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  font-size: 18px;
+}
+
+.no-results {
+  text-align: center;
+  font-size: 18px;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.result-item {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.result-item:hover {
+  transform: translateY(-5px);
+}
+
+.result-item h2 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.result-item p {
+  font-size: 16px;
+  color: #666;
+}
 </style>
