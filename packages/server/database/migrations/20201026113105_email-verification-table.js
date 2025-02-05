@@ -1,29 +1,34 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .createTable("emailVerification", (table) => {
-      table
-        .string("email", 320)
-        .notNullable()
-        .unique()
-        .primary()
-        .references("email")
-        .inTable("users")
-        .onDelete("cascade");
-      table.string("token", 320).notNullable().unique();
-      table.timestamp("createdAt").defaultTo(knex.fn.now()).notNullable();
-    })
-    .then(() => {
-      logger.info({
-        code: "DATABASE_MIGRATIONS",
-        message: "Creating table: emailVerification",
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasTable('emailVerification'))) { // Check if table exists
+    return knex.schema
+      .createTable("emailVerification", (table) => {
+        table
+          .string("email", 320)
+          .notNullable()
+          .unique()
+          .primary()
+          .references("email")
+          .inTable("users")
+          .onDelete("cascade");
+        table.string("token", 320).notNullable().unique();
+        table.timestamp("createdAt").defaultTo(knex.fn.now()).notNullable();
+      })
+      .then(() => {
+        logger.info({
+          code: "DATABASE_MIGRATIONS",
+          message: "Creating table: emailVerification",
+        });
+      })
+      .catch((err) => {
+        logger.error({
+          code: "DATABASE_MIGRATIONS",
+          err,
+        });
       });
-    })
-    .catch((err) => {
-      logger.error(err);
-    });
+  }
 };
 
 exports.down = (knex) => {

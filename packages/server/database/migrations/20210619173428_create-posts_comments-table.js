@@ -1,18 +1,18 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .createTable("posts_comments", (table) => {
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasTable('posts_comments'))) { // Check if table exists
+    return knex.schema.createTable("posts_comments", (table) => {
       table.uuid("id").notNullable().primary();
-      table.uuid("parent_id").references("id").inTable("posts_comments");
+      table.uuid("parent_id").nullable().references("id").inTable("posts_comments");
       table.uuid("activity_id").notNullable();
       table.string("body", 4000).notNullable();
       table.boolean("is_edited").defaultTo(false);
       table.boolean("is_spam").defaultTo(false);
       table.boolean("is_internal").defaultTo(false);
-      table.timestamp("created_at").notNullable();
-      table.timestamp("updated_at").notNullable();
+      table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
+      table.timestamp("updated_at").notNullable().defaultTo(knex.fn.now());
     })
     .then(() => {
       logger.info({
@@ -21,8 +21,12 @@ exports.up = (knex) => {
       });
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error({
+        code: "DATABASE_MIGRATIONS",
+        message: err.message, // Log the actual error message for better debugging
+      });
     });
+  }
 };
 
 exports.down = (knex) => {
@@ -39,6 +43,9 @@ exports.down = (knex) => {
       });
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error({
+        code: "DATABASE_MIGRATIONS",
+        message: err.message, // Log the actual error message for better debugging
+      });
     });
 };

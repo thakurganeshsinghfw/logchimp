@@ -1,9 +1,9 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .createTable("roadmaps", (table) => {
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasTable('roadmaps'))) { // Check if table exists
+    return knex.schema.createTable("roadmaps", (table) => {
       table.uuid("id").notNullable().unique().primary();
       table.string("name", 50).notNullable();
       table.string("url", 50).notNullable().unique();
@@ -21,14 +21,21 @@ exports.up = (knex) => {
     })
     .catch((err) => {
       logger.error({
-        message: err,
+        code: "DATABASE_MIGRATIONS",
+        message: err.message, // Log the actual error message for better debugging
       });
     });
+  }
 };
 
 exports.down = (knex) => {
   return knex.schema
-    .dropTable("roadmaps")
+    .hasTable("roadmaps")
+    .then((exists) => {
+      if (exists) {
+        return knex.schema.dropTable("roadmaps");
+      }
+    })
     .then(() => {
       logger.info({
         message: "Dropping table: roadmaps",
@@ -36,7 +43,8 @@ exports.down = (knex) => {
     })
     .catch((err) => {
       logger.error({
-        message: err,
+        code: "DATABASE_MIGRATIONS",
+        message: err.message, // Log the actual error message for better debugging
       });
     });
 };

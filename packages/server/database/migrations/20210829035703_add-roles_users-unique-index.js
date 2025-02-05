@@ -1,39 +1,53 @@
 // utils
 const logger = require("../../utils/logger");
 
-/**
- * IF EXISTS used as fail-safe for dropping the CONSTRAINT 'role_id_user_id_unique_index'
- * on ID in roles_users table. The unique index have already been removed from '20201125214155_roles-user-table' migration.
- */
-exports.up = (knex) => {
-  return knex
-    .raw(
-      `
-      CREATE UNIQUE INDEX "role_id_user_id_unique_index" ON "roles_users"("role_id", "user_id");
+exports.up = async (knex) => {
+  try {
+    const indexExistsResult = await knex.raw(`
+      SELECT EXISTS (
+        SELECT 1
+        FROM pg_class
+        WHERE relname = 'role_id_user_id_unique_index'
+          AND relkind = 'i' -- index
+      );
+    `);
+    const indexExists = indexExistsResult.rows[0].exists;
 
-      ALTER TABLE roles_users DROP CONSTRAINT IF EXISTS roles_users_id_unique;
-    `,
-    )
-    .then(() => {
+    if (!indexExists) {
+      await knex.raw(
+        `
+          CREATE UNIQUE INDEX "role_id_user_id_unique_index" ON "roles_users" ("role_id", "user_id");
+        `
+      );
       logger.info({
         code: "DATABASE_MIGRATIONS",
         message: "Creating index: role_id_user_id_unique_index",
       });
-    })
-    .catch((err) => {
-      logger.error(err);
+    } else {
+      logger.warn({
+        code: "DATABASE_MIGRATIONS",
+        message: "Index 'role_id_user_id_unique_index' already exists on roles_users table. Skipping migration.",
+      });
+    }
+  } catch (error) {
+    logger.error({
+      code: "DATABASE_MIGRATIONS",
+      message: `Error during migration: ${error.message}`,
     });
+  }
 };
 
 exports.down = (knex) => {
-  return knex
-    .raw("DROP INDEX role_id_user_id_unique_index;")
+  return knex.raw("DROP INDEX IF EXISTS role_id_user_id_unique_index;")
     .then(() => {
       logger.info({
         message: "Dropping index: role_id_user_id_unique_index",
       });
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error({
+        code: "DATABASE_MIGRATIONS",
+        message: err.message,
+      });
     });
 };

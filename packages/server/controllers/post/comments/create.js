@@ -12,13 +12,18 @@ const { JSDOM } = require('jsdom');
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 
+// ... (other imports) ...
+
 module.exports = async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user.userId; // Assuming req.user.userId is always defined; if not add checks
   const { post_id } = req.params;
   const { parent_id, is_internal, body } = req.body;
 
-  // check auth user has required permission to set comment as internal
-  // check the auth user has permission to comment
+  // Input validation: Check for undefined or null values
+  if (!userId || !post_id || !body) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
   const sanitizedBody = DOMPurify.sanitize(body);
 
   try {
@@ -27,77 +32,45 @@ module.exports = async (req, res) => {
       .from("settings")
       .first();
 
-    if (!labSettings.labs.comments) {
-      return res.status(403).send({
-        message: error.api.labs.disabled,
-        code: "LABS_DISABLED",
-      });
+    if (!labSettings?.labs?.comments) { // Use optional chaining
+      return res.status(403).send({ message: error.api.labs.disabled, code: "LABS_DISABLED" });
     }
 
     const results = await database.transaction(async (trx) => {
-      // postActivityId will be shared b/w "posts_comments" and "posts_activity" table
       const postActivityId = uuid();
+      const commentId = uuid(); // Generate UUID for comment
 
-      const comments = await trx("posts_comments").insert(
-        {
-          id: uuid(),
-          parent_id,
-          body: sanitizedBody, // Use sanitized content
-          activity_id: postActivityId,
-          is_internal,
-          created_at: new Date().toJSON(),
-          updated_at: new Date().toJSON(),
-        },
-        [
-          "id",
-          "parent_id",
-          "body",
-          "is_internal",
-          "is_edited",
-          "is_spam",
-          "created_at",
-        ],
-      );
+      const [comment] = await trx("posts_comments").insert({
+        id: commentId,
+        parent_id,
+        body: sanitizedBody,
+        activity_id: postActivityId,
+        is_internal,
+        created_at: new Date().toJSON(),
+        updated_at: new Date().toJSON(),
+      }, ["id", "parent_id", "body", "is_internal", "is_edited", "is_spam", "created_at"]);
 
-      const comment = comments[0];
+      const [activity] = await trx("posts_activity").insert({
+        id: postActivityId,
+        type: "comment",
+        posts_comments_id: commentId, // Use generated commentId
+        post_id: post_id,
+        author_id: userId, // Use userId from req.user
+        created_at: new Date().toJSON(),
+      }).returning(["id", "type", "created_at"]);
 
-      const activities = await trx("posts_activity")
-        .insert({
-          id: postActivityId,
-          type: "comment",
-          posts_comments_id: comment.id,
-          post_id: post_id,
-          author_id: userId,
-          created_at: new Date().toJSON(),
-        })
-        .returning(["id", "type", "created_at"]);
-
-      const activity = activities[0];
 
       const author = await trx("users")
         .select("userId", "name", "username", "avatar")
         .where({ userId })
         .first();
 
-      return {
-        ...activity,
-        comment,
-        author,
-      };
+      return { ...activity, comment, author };
     });
 
-    res.status(201).send({
-      comment: results,
-    });
+    res.status(201).send({ comment: results });
   } catch (err) {
-    logger.log({
-      level: "error",
-      message: err,
-    })
-
-    res.status(500).send({
-      message: error.general.serverError,
-      code: "SERVER_ERROR",
-    })
+    logger.error("Error creating comment:", err); // Log the error for debugging
+    res.status(500).send({ message: error.general.serverError, code: "SERVER_ERROR" });
   }
 };

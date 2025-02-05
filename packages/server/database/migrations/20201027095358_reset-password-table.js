@@ -1,9 +1,9 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .createTable("resetPassword", (table) => {
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasTable('resetPassword'))) { // Check if table exists
+    return knex.schema.createTable("resetPassword", (table) => {
       table
         .string("email", 320)
         .notNullable()
@@ -22,8 +22,12 @@ exports.up = (knex) => {
       });
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error({
+        code: "DATABASE_MIGRATIONS",
+        err,
+      });
     });
+  }
 };
 
 exports.down = (knex) => {

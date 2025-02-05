@@ -1,22 +1,15 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .createTable("posts_activity", (table) => {
-      table.uuid("id").notNullable().primary();
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasTable('posts_activity'))) { // Check if table exists
+    return knex.schema.createTable("posts_activity", (table) => {
+      table.uuid("id").primary();
+      table.uuid("post_id").notNullable().references("postId").inTable("posts").onDelete("cascade");
+      table.uuid("user_id").notNullable().references("userId").inTable("users");
       table.string("type", 50).notNullable();
-      table
-        .uuid("posts_comments_id")
-        .references("id")
-        .inTable("posts_comments");
-      table.uuid("post_id").references("postId").inTable("posts").notNullable();
-      table
-        .uuid("author_id")
-        .references("userId")
-        .inTable("users")
-        .notNullable();
-      table.timestamp("created_at").notNullable();
+      table.jsonb("data").nullable();
+      table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
     })
     .then(() => {
       logger.info({
@@ -25,8 +18,12 @@ exports.up = (knex) => {
       });
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error({
+        code: "DATABASE_MIGRATIONS",
+        message: err.message, // Log the actual error message for better debugging
+      });
     });
+  }
 };
 
 exports.down = (knex) => {
@@ -43,6 +40,9 @@ exports.down = (knex) => {
       });
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error({
+        code: "DATABASE_MIGRATIONS",
+        message: err.message, // Log the actual error message for better debugging
+      });
     });
 };

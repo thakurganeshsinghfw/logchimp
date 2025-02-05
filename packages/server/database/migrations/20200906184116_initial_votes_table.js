@@ -1,9 +1,9 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .createTable("votes", (table) => {
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasTable('votes'))) { // Check if table exists
+    return knex.schema.createTable("votes", (table) => {
       table.uuid("voteId").notNullable().unique().primary();
       table.uuid("userId").references("userId").inTable("users").notNullable();
       table
@@ -27,6 +27,7 @@ exports.up = (knex) => {
         message: err,
       });
     });
+  }
 };
 
 exports.down = (knex) => {

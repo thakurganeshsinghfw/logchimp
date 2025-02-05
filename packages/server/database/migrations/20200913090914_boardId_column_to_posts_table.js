@@ -1,9 +1,9 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .table("posts", (table) => {
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasColumn('posts', 'boardId'))) { // Check if column exists
+    return knex.schema.table("posts", (table) => {
       table
         .uuid("boardId")
         .references("boardId")
@@ -22,6 +22,7 @@ exports.up = (knex) => {
         message: err,
       });
     });
+  }
 };
 
 exports.down = (knex) => {

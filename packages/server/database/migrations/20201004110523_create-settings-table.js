@@ -1,9 +1,10 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .createTable("settings", (table) => {
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasTable('settings'))) { // Check if table exists
+    return knex.schema.createTable("settings", (table) => {
+      table.increments('id').primary(); // Add a primary key (assuming auto-increment)
       table.string("title");
       table.string("description");
       table.string("logo");
@@ -12,6 +13,7 @@ exports.up = (knex) => {
       table.string("googleAnalyticsId");
       table.boolean("isPoweredBy").defaultTo(true);
       table.boolean("allowSignup").defaultTo(true);
+      table.timestamps(true, true); // Add createdAt and updatedAt columns
     })
     .then(() => {
       logger.info({
@@ -25,6 +27,7 @@ exports.up = (knex) => {
         err,
       });
     });
+  }
 };
 
 exports.down = (knex) => {

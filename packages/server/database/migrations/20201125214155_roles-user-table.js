@@ -1,10 +1,10 @@
 // utils
 const logger = require("../../utils/logger");
 
-exports.up = (knex) => {
-  return knex.schema
-    .createTable("roles_users", (table) => {
-      table.uuid("id").notNullable().primary();
+exports.up = async (knex) => {
+  if (!(await knex.schema.hasTable('roles_users'))) { // Check if table exists
+    return knex.schema.createTable("roles_users", (table) => {
+      table.uuid("id").notNullable().primary(); // Use primary key instead of unique
       table
         .uuid("role_id")
         .notNullable()
@@ -17,6 +17,7 @@ exports.up = (knex) => {
         .references("userId")
         .inTable("users")
         .onDelete("cascade");
+      table.unique(["role_id", "user_id"]); // Enforce uniqueness on the combination of role_id and user_id
     })
     .then(() => {
       logger.info({
@@ -25,19 +26,31 @@ exports.up = (knex) => {
       });
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error({
+        code: "DATABASE_MIGRATIONS",
+        message: err.message, // Log the actual error message
+      });
     });
+  }
 };
 
 exports.down = (knex) => {
   return knex.schema
-    .dropTable("roles_users")
+    .hasTable("roles_users")
+    .then((exists) => {
+      if (exists) {
+        return knex.schema.dropTable("roles_users");
+      }
+    })
     .then(() => {
       logger.info({
         message: "Dropping table: roles_users",
       });
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error({
+        code: "DATABASE_MIGRATIONS",
+        message: err.message, // Log the actual error message
+      });
     });
 };

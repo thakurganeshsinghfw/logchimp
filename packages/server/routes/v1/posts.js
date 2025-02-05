@@ -9,6 +9,8 @@ const post = require("../../controllers/post");
 const middleware = require("../../middlewares");
 const exists = require("../../middlewares/postExists");
 
+// Upload service
+const uploadController = require('../../controllers/upload/upload');
 
 /**
  * @swagger
@@ -115,5 +117,78 @@ router.delete(
   middleware.apiAuth,
   post.comments.destroy,
 );
+
+// New routes for homepage enhancements
+
+/**
+ * @swagger
+ * /api/v1/posts/featured:
+ *   get:
+ *     summary: Get featured posts
+ *     tags: [Posts API]
+ *     responses:
+ *       200:
+ *         description: Array of featured posts
+ */
+router.get("/posts/featured", post.getFeaturedPosts);
+
+
+/**
+ * @swagger
+ * /api/v1/posts/trending:
+ *   get:
+ *     summary: Get trending posts
+ *     tags: [Posts API]
+ *     responses:
+ *       200:
+ *         description: Array of trending posts
+ */
+router.get("/posts/trending", post.getTrendingPosts);
+
+
+/**
+ * @swagger
+ * /api/v1/categories:
+ *   get:
+ *     summary: Get all categories
+ *     tags: [Posts API]
+ *     responses:
+ *       200:
+ *         description: Array of categories
+ */
+router.get("/categories", post.getAllCategories);
+
+
+/**
+ * @swagger
+ * /api/v1/upload:
+ *   post:
+ *     summary: Upload media to S3
+ *     tags: [Upload API]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url:
+ *                 type: string
+ *                 description: Base64 encoded media URL
+ *     responses:
+ *       200:
+ *         description: URL of uploaded media
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *       500:
+ *         description: Upload failed
+ */
+router.post('/upload', uploadController.upload);
+
 
 module.exports = router;
