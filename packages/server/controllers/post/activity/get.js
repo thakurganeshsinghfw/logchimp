@@ -6,7 +6,7 @@ const error = require("../../../errorResponse.json");
 
 module.exports = async (req, res) => {
   const { post_id } = req.params;
-  const { per_page = 20, page = 1, sort } = req.query;
+  const { per_page = 20, page = 0, sort } = req.query;
 
   try {
 
@@ -60,8 +60,8 @@ module.exports = async (req, res) => {
       OFFSET :offset
     ;`,
       {
-        limit: per_page,
-        offset: page,
+        limit: per_page || 20,
+        offset: page || 0,
         post_id,
       },
     );

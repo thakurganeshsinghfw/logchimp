@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
           id: postActivityId,
           type: "comment",
           posts_comments_id: comment.id,
-          post_id,
+          post_id: post_id,
           author_id: userId,
           created_at: new Date().toJSON(),
         })

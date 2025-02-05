@@ -17,7 +17,7 @@
 			<l-textarea
 			v-model="description"
 			label="Description"
-			rows="4"
+			rows="8"
 			name="Post description"
 			placeholder="What would you use it for?"
 			:disabled="createPostPermissionDisabled"

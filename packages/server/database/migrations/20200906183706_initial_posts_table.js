@@ -8,6 +8,7 @@ exports.up = (knex) => {
       table.string("title", 100).notNullable();
       table.string("slug", 150).notNullable().unique();
       table.string("slugId", 20).notNullable();
+      table.string("status", 20).notNullable();
       table.text("contentMarkdown");
       table.uuid("userId").references("userId").inTable("users").notNullable();
       table.timestamp("createdAt").defaultTo(knex.fn.now()).notNullable();

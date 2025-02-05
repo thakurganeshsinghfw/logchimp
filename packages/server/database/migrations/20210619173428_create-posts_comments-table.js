@@ -7,7 +7,7 @@ exports.up = (knex) => {
       table.uuid("id").notNullable().primary();
       table.uuid("parent_id").references("id").inTable("posts_comments");
       table.uuid("activity_id").notNullable();
-      table.string("body", 1000).notNullable();
+      table.string("body", 4000).notNullable();
       table.boolean("is_edited").defaultTo(false);
       table.boolean("is_spam").defaultTo(false);
       table.boolean("is_internal").defaultTo(false);

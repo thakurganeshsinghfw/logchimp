@@ -8,7 +8,7 @@ theme: default
 
 * Node v18 or higher
 * Docker
-  
+
 ---
 # Local Setup
 
@@ -25,7 +25,7 @@ theme: default
 
 1. Run a postgres docker container with following command
     ```sh
-    docker run --name my_postgres_db -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -v logchimp_db_data:/var/lib/postgresql/data -d postgres
+    podman run --name logchimp_db -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -v logchimp_db_data:/var/lib/postgresql/data postgres
     ```
 2. Run a adminer docker container locally using following command
     ```sh
@@ -34,9 +34,9 @@ theme: default
 3. Navigate to [Adminer Home Page](http://localhost:8080) and login to db with following credentials
     ```yml
     db_name: postgres
-    db_port: 5432
+    db_port: 5433
     db_user: postgres
-    db_password: mysecretpassword
+    db_password: 123123
     ```
 
 ---

@@ -65,6 +65,7 @@ exports.create = async (req, res) => {
         contentMarkdown,
         userId,
         boardId,
+        status: "submitted",
       })
       .into("posts")
       .returning("*");
