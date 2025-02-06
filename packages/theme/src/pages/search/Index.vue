@@ -3,9 +3,8 @@
     <h1>Search Posts</h1>
     <div class="search-bar">
       <input
-        type="text"
         v-model="query"
-        @input="onSearch"
+        @input="fetchPosts"
         placeholder="Search..."
         class="search-input"
       />
@@ -14,14 +13,14 @@
     <div class="filters">
       <label>
         Board:
-        <select v-model="board" class="filter-select">
+        <select v-model="board" class="filter-select" @change="fetchPosts">
           <option value="">All Boards</option>
           <option v-for="board in boards" :key="board.boardId" :value="board.boardId">{{ board.name }}</option>
         </select>
       </label>
       <label>
         Roadmap:
-        <select v-model="roadmap" class="filter-select">
+        <select v-model="roadmap" class="filter-select" @change="fetchPosts">
           <option value="">All Roadmaps</option>
           <option v-for="roadmap in roadmaps" :key="roadmap.id" :value="roadmap.id">{{ roadmap.name }}</option>
         </select>
@@ -31,24 +30,39 @@
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else-if="results.length === 0" class="no-results">No results found</div>
     <div v-else class="results">
-      <div v-for="result in results" :key="result.id" class="result-item">
-        <h2>{{ result.title }}</h2>
-        <p>{{ result.description }}</p>
+      <div v-for="post in results" :key="post.postId" class="result-item">
+        <router-link :to="`/posts/${post.slug}`">
+          <h2>{{ post.title }}</h2>
+        </router-link>
+        <p>
+          {{ useTrim(post.contentMarkdown, 160) }}....
+        </p>
+<pre>
+<p style="font-weight: 700;">{{dayjs(post.createdAt, "yyyy mm dd")}}    Status: {{ post.status }}</p>
+</pre>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { searchPosts } from '../../modules/posts';
 import { getAllBoards } from '../../modules/boards';
 import { getAllRoadmaps } from '../../modules/roadmaps';
+import dayjs from "dayjs";
+import { useTrim } from "../../hooks";
 
 interface SearchResult {
-  id: number;
+  postId: string;
   title: string;
-  description: string;
+  slug: string;
+  slugId: string;
+  contentMarkdown?: string;
+  createdAt: string;
+  updatedAt: string;
+  status?: string; // Added status field
 }
 
 interface Board {
@@ -75,6 +89,40 @@ const boards = ref<Board[]>([]);
 const roadmaps = ref<Roadmap[]>([]);
 const loading = ref(false);
 const error = ref('');
+
+async function fetchPosts() {
+  loading.value = true;
+  error.value = '';
+
+  try {
+    const response = await searchPosts({
+      query: query.value,
+      board: board.value,
+      roadmap: roadmap.value
+    });
+    results.value = response.data.posts;
+  } catch (err) {
+    console.error('Error fetching search results:', err);
+    error.value = 'Failed to fetch search results. Please try again.';
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function fetchBoardsAndRoadmaps() {
+  try {
+    const [boardsResponse, roadmapsResponse] = await Promise.all([getBoards(), getRoadmaps()]);
+    boards.value = boardsResponse.data.boards;
+    roadmaps.value = roadmapsResponse.data.roadmaps;
+  } catch (err) {
+    console.error('Error fetching boards and roadmaps:', err);
+  }
+}
+
+onMounted(async () => {
+  await fetchBoardsAndRoadmaps();
+  await fetchPosts();
+});
 
 const fetchBoards = async () => {
   try {

@@ -61,7 +61,7 @@
       <h6 class="form-section-title">
         Other
       </h6>
-      <div class="form-columns">
+      <div class="form-columns" style="gap: 1rem;">
         <div class="form-column">
           <dropdown-wrapper>
             <template #toggle>
@@ -147,6 +147,32 @@
         </div>
       </div>
     </div>
+    <div style="display: flex; justify-items: auto; gap: 1rem;">
+      <button class="filter-button" @click="createL2Ticket" :disabled="ticketDetails !== null">
+        Create L2 Ticket
+      </button>
+      <div v-if="ticketDetails" class="ticket-details">
+        <span>Support (L2) Ticket ID:</span>
+        <a :href="ticketDetails.url" target="_blank" class="ticket-link">
+          <span class="ticket-id">{{ ticketDetails.id }}</span>
+          <Link2Icon />
+        </a>
+        <span class="ticket-status" v-if="ticketDetails.statusMeaning">
+          ({{ ticketDetails.statusMeaning }})
+        </span>
+      </div>
+    </div>
+
+    <br/>
+    <div style="display: flex; justify-items: auto; gap: 1rem;">
+      <button class="filter-button" @click="createFreshreleaseStory">
+        Create Story on Freshrelease
+      </button>
+      <p style="padding: 5px;" v-if="freshreleaseTicketDetails">
+        Freshrelease Ticket ID: <b>{{ freshreleaseTicketDetails.id }}</b>
+      </p>
+    </div>
+
   </div>
 </template>
 
@@ -156,7 +182,7 @@ import { useHead } from "@vueuse/head";
 
 // modules
 import { router } from "../../../../router"
-
+import axios from 'axios';
 import { PostType, getPostBySlug, updatePost } from "../../../../modules/posts";
 import { Board, searchBoard } from "../../../../modules/boards";
 import { Roadmap, searchRoadmap } from "../../../../modules/roadmaps";
@@ -174,6 +200,8 @@ import Dropdown from "../../../../components/ui/dropdown/Dropdown.vue";
 import DropdownWrapper from "../../../../components/ui/dropdown/DropdownWrapper.vue";
 import BoardSuggestion from "../../../../components/board/BoardSuggestion.vue";
 import Breadcrumbs from "../../../../components/Breadcrumbs.vue";
+import config from "../../../../config/config";
+import { Link2Icon } from "lucide-vue";
 
 interface GetPostType extends PostType {
   author: UserType
@@ -184,6 +212,11 @@ interface GetPostType extends PostType {
     votesCount: number
     viewerVote: boolean
   }
+}
+
+interface TicketDetails {
+  id: string;
+  url: string;
 }
 
 const { permissions } = useUserStore()
@@ -288,6 +321,7 @@ async function updatePostHandler() {
 }
 
 async function postBySlug() {
+
   loading.post = true;
 	const route = router.currentRoute.value;
 
@@ -299,8 +333,11 @@ async function postBySlug() {
       console.log('API response:', response.data); // Debugging log
 
       Object.assign(postData, response.data.post);
+      console.log("post details is : ", postData)
+
       status.search = formatStatus(postData.status); // Set the initial status search value
       loading.post = false;
+      callFetchDetails();
     } catch (err) {
       console.error(err);
       loading.post = false;
@@ -382,7 +419,81 @@ function filterStatusOptions(event: any) {
   populateStatusDropdown();
 }
 
-onMounted(() => postBySlug())
+onMounted(() => {
+  postBySlug();
+});
+
+async function callFetchDetails() {
+
+  await fetchTicketDetails();
+}
+
+const ticketDetails = ref<TicketDetails | null>(null);
+
+const fetchTicketDetails = async () => {
+  try {
+    const response = await axios.get(`/api/v1/tickets/${postData.postId}`);
+    if (response.data) {
+      ticketDetails.value = {
+        id: response.data.ticketId,
+        url: response.data.ticketUrl
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching ticket details:', error);
+  }
+};
+
+const createL2Ticket = async () => {
+  try {
+    const response = await axios.post('/api/v1/tickets', {
+      postId: postData.postId,
+      title: postData.title,
+      description: postData.contentMarkdown,
+      email: config.freshdesk.email
+    });
+
+    if (response.status === 201) {
+      ticketDetails.value = {
+        id: response.data.ticketId,
+        url: response.data.ticketUrl
+      };
+      alert('L2 Ticket created successfully!');
+    } else {
+      alert('Failed to create L2 Ticket.');
+    }
+  } catch (error) {
+    console.error('Error creating L2 Ticket:', error);
+    alert('An error occurred while creating the L2 Ticket.');
+  }
+};
+
+const freshreleaseTicketDetails = ref<{ id: string } | null>(null);
+
+// Create Freshrelease story
+const createFreshreleaseStory = async () => {
+  try {
+    const response = await axios.post('/api/v1/tickets/freshrelease', {
+      postId: postData.postId,
+      title: postData.title,
+      description: postData.contentMarkdown,
+      email: config.freshdesk.email // Assuming the API expects the same email or another auth method
+    });
+
+    if (response.status === 201) {
+      freshreleaseTicketDetails.value = {
+        id: response.data.ticketId
+      };
+      alert('Freshrelease story created successfully!');
+    } else {
+      alert('Failed to create Freshrelease story.');
+    }
+  } catch (error) {
+    console.error('Error creating Freshrelease story:', error);
+    alert('An error occurred while creating the Freshrelease story.');
+  }
+};
+
 
 useHead({
   title: () => `${postData.title ? `${postData.title} • `: ''}Post • Dashboard`
@@ -390,13 +501,46 @@ useHead({
 </script>
 
 <style scoped>
-.status-option {
-  padding: 10px;
+.filter-button {
+  padding: 10px 20px;
+  background-color: #050505;
+  color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.status-option:hover {
-  background-color: #f0f0f0;
+.filter-button:disabled {
+  background-color: #7f7f7f;
+  cursor: not-allowed;
 }
+
+.ticket-details {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ticket-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Space between ID and icon */
+  text-decoration: underline;
+
+}
+
+.ticket-link:hover {
+  text-decoration: underline;
+}
+
+.ticket-link i {
+  margin-right: 5px;
+}
+
 </style>

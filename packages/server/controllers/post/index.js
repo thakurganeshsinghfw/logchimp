@@ -5,6 +5,7 @@ const updatePost = require("./updatePost");
 const deleteById = require("./deleteById");
 const activity = require("./activity");
 const comments = require("./comments");
+const searchPost = require("./searchPost");
 const db = require('../../database');
 
 const getFeaturedPosts = async (req, res) => {
@@ -62,4 +63,5 @@ module.exports = {
   getFeaturedPosts,
   getTrendingPosts,
   getAllCategories,
+  searchPost,
 };

@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     const mvpPostsResult = await database.raw(`SELECT COUNT(*) AS mvp FROM posts WHERE ${dateFilter} AND mvp = true`);
     const mvpPosts = mvpPostsResult.rows[0].mvp;
 
-    const engagementRate = totalPosts > 0 ? (((totalUpvotes + totalComments) / totalPosts) * 100).toFixed(2) : 0;
+    const engagementRate = totalPosts > 0 ? ((((totalUpvotes + totalComments)) / totalPosts) * 100).toFixed(2) : 0;
     const resolutionRate = totalPosts > 0 ? ((resolvedPosts / totalPosts) * 100).toFixed(2) : 0;
     const responseRate = totalPosts > 0 ? ((respondedPosts / totalPosts) * 100).toFixed(2) : 0;
     const mvpInteractionRate = totalPosts > 0 ? ((mvpPosts / totalPosts) * 100).toFixed(2) : 0;

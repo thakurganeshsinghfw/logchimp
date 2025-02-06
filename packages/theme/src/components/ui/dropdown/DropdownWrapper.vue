@@ -36,3 +36,20 @@ function away() {
 .dropdown-wrapper
 	position: relative
 </style>
+
+<style lang='scss'>
+.filter-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #050505;
+  color: white;
+  cursor: pointer;
+}
+
+.filter-button:hover {
+  background-color: #0056b3;
+}
+</style>
+
+

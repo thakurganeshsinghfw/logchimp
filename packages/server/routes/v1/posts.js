@@ -4,6 +4,7 @@ const router = express.Router();
 
 // controller
 const post = require("../../controllers/post");
+const searchPost = require("../../controllers/post/searchPost");
 
 // middleware
 const middleware = require("../../middlewares");
@@ -189,5 +190,37 @@ router.get("/categories", post.getAllCategories);
  *         description: Upload failed
  */
 router.post('/upload', uploadController.upload);
+
+// New route for searching posts
+/**
+ * @swagger
+ * /api/v1/posts/search:
+ *   get:
+ *     summary: Search posts
+ *     tags: [Posts API]
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Search query
+ *       - in: query
+ *         name: board
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Board filter
+ *       - in: query
+ *         name: roadmap
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Roadmap filter
+ *     responses:
+ *       200:
+ *         description: Array of posts
+ */
+router.get("/posts/search", searchPost.searchPosts);
 
 module.exports = router;

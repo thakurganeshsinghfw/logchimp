@@ -109,7 +109,7 @@ export const getPosts = async ({
       page,
       limit,
       created: sort,
-      userId,
+      userId: getUserId || userId,
       boardId,
       roadmapId,
     },
