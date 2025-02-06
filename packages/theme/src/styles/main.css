@@ -95,11 +95,10 @@ h6, .h6 {
 }
 
 .container {
+  max-width: 100%;
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
+  padding: 0 20px; /* Optional: Add some padding for better appearance */
+  margin: 0 auto; /* Center the container */
 }
 
 @media (min-width: 576px) {

@@ -1,6 +1,6 @@
 <template>
   <div class="roadmaps-container">
-    <h1>Roadmaps</h1>
+    <h4>Roadmaps</h4>
     <div v-if="loading" class="loading">Loading...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else class="roadmap-tabs">
@@ -15,7 +15,9 @@
         </div>
       </div>
       <div class="tab-content">
-        <RoadmapColumn v-if="selectedRoadmap" :roadmap="selectedRoadmap" />
+        <div class="roadmap-columns-container">
+          <RoadmapColumn v-if="selectedRoadmap" :roadmap="selectedRoadmap" />
+        </div>
       </div>
     </div>
   </div>
@@ -109,4 +111,11 @@ h1
 .tab-content
   flex: 1
   padding-left: 20px
+  overflow-x: auto
+
+.roadmap-columns-container
+  display: flex
+  gap: 20px
+  overflow-x: auto
+  padding-bottom: 10px
 </style>

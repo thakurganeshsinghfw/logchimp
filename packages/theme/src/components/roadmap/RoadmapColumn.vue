@@ -12,20 +12,24 @@
     <div data-test="roadmap-column" class="roadmap-column">
       <div v-if="loading" class="loading">Loading...</div>
       <div v-else-if="error" class="error">{{ error }}</div>
-      <div v-else>
-        <roadmap-post-card
-          v-for="post in posts"
-          :key="post.postId"
-          :post="post"
-        />
-        <div v-if="posts.length === 0" class="no-posts">No posts available.</div>
+      <div v-else class="kanban-board">
+        <div v-for="status in statuses" :key="status" class="kanban-column">
+          <h6 class="kanban-column-header">{{ formatStatus(status) }}</h6>
+          <div class="kanban-column-content">
+            <roadmap-post-card
+              v-for="post in filteredPostsByStatus(status)"
+              :key="post.postId"
+              :post="post"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch, ref } from "vue";
+import { onMounted, watch, ref, computed } from "vue";
 import { getPosts } from "../../modules/posts";
 import RoadmapPostCard from "./RoadmapPostCard.vue";
 
@@ -37,6 +41,7 @@ interface Post {
   title: string;
   contentMarkdown: string;
   createdAt: string;
+  status: string;
   voters: {
     votesCount: number;
     viewerVote: boolean;
@@ -67,6 +72,8 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const page = ref(1);
 
+const statuses = ["submitted", "prioritised", "in development", "resolved", "not implementing"];
+
 async function getRoadmapPosts() {
   loading.value = true;
   error.value = null;
@@ -82,6 +89,14 @@ async function getRoadmapPosts() {
   } finally {
     loading.value = false;
   }
+}
+
+function formatStatus(status: string): string {
+  return status.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function filteredPostsByStatus(status: string) {
+  return posts.value.filter(post => post.status === status);
 }
 
 watch(() => props.roadmap.id, () => {
@@ -128,7 +143,27 @@ h6 {
   color: #555;
 }
 
-.roadmap-column {
+.kanban-board {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.kanban-column {
+  flex: 0 0 250px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.kanban-column-header {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.kanban-column-content {
   display: flex;
   flex-direction: column;
   gap: 10px;

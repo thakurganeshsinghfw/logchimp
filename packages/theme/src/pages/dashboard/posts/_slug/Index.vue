@@ -115,16 +115,40 @@
             </template>
           </dropdown-wrapper>
         </div>
+
+        <div class="form-column">
+          <dropdown-wrapper>
+            <template #toggle>
+              <l-text
+                v-model="status.search"
+                label="Status"
+                placeholder="Select status"
+                @focus="populateStatusDropdown"
+                @input="filterStatusOptions"
+              />
+            </template>
+
+            <template #default="dropdown">
+              <dropdown
+                v-if="showStatusDropdown"
+                :height="250"
+              >
+                <div
+                  v-for="(item, index) in filteredStatusOptions"
+                  :key="index"
+                  class="status-option"
+                  @click="selectStatus(item)"
+                >
+                  {{ item.value }}
+                </div>
+              </dropdown>
+            </template>
+          </dropdown-wrapper>
+        </div>
       </div>
     </div>
   </div>
 </template>
-
-<script lang="ts">
-export default {
-	name: "DashboardPostView",
-}
-</script>
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from "vue";
@@ -165,33 +189,33 @@ interface GetPostType extends PostType {
 const { permissions } = useUserStore()
 
 const loading = reactive<{
-	post: boolean
-	updatePostButton: boolean
+  post: boolean
+  updatePostButton: boolean
 }>({
-	post: false,
-	updatePostButton: false
+  post: false,
+  updatePostButton: false
 })
 const postData = reactive<GetPostType>({
-	postId: "",
-	title: "",
-	slug: "",
-	slugId: "",
-	contentMarkdown: "",
-	createdAt: "",
-	updatedAt: "",
+  postId: "",
+  title: "",
+  slug: "",
+  slugId: "",
+  contentMarkdown: "",
+  createdAt: "",
+  updatedAt: "",
   author: {
     userId: "",
     name: "",
     username: "",
     avatar: "",
   },
-	board: {
+  board: {
     boardId: "",
     name: "",
     url: "",
     color: "",
   },
-	roadmap: {
+  roadmap: {
     id: "",
     name: "",
     url: "",
@@ -201,62 +225,81 @@ const postData = reactive<GetPostType>({
     votes: [],
     votesCount: 0,
     viewerVote: false,
-  }
+  },
+  status: ""
 })
 const boards = reactive<{
-	search: string
-	suggestions: Board[]
+  search: string
+  suggestions: Board[]
 }>({
-	search: "",
-	suggestions: []
+  search: "",
+  suggestions: []
 })
 const roadmaps = reactive<{
-	search: string
-	suggestions: Roadmap[]
+  search: string
+  suggestions: Roadmap[]
 }>({
-	search: "",
-	suggestions: []
+  search: "",
+  suggestions: []
 })
+const status = reactive<{
+  search: string
+}>({
+  search: ""
+})
+const showStatusDropdown = ref(false)
+const statusOptions = [
+  { key: "submitted", value: "Submitted" },
+  { key: "prioritised", value: "Prioritised" },
+  { key: "in development", value: "In Development" },
+  { key: "resolved", value: "Resolved" },
+  { key: "rejected", value: "Rejected" }
+]
+const filteredStatusOptions = ref(statusOptions)
 
 const updatePostPermissionDisabled = computed(() =>  {
-	const checkPermission = permissions.includes("post:update");
-	return !checkPermission;
+  const checkPermission = permissions.includes("post:update");
+  return !checkPermission;
 })
 
 async function updatePostHandler() {
-	loading.updatePostButton = true;
+  loading.updatePostButton = true;
 
-	try {
-		const response = await updatePost({
-			id: postData.postId,
-			title: postData.title,
-			contentMarkdown: postData.contentMarkdown,
-			slugId: postData.slugId,
-			userId: postData.author.userId,
-			boardId: postData.board ? postData.board.boardId : undefined,
-			roadmapId: postData.roadmap ? postData.roadmap.id : undefined
-		});
+  try {
+    const response = await updatePost({
+      id: postData.postId,
+      title: postData.title,
+      contentMarkdown: postData.contentMarkdown,
+      slugId: postData.slugId,
+      userId: postData.author.userId,
+      boardId: postData.board ? postData.board.boardId : undefined,
+      roadmapId: postData.roadmap ? postData.roadmap.id : undefined,
+      status: postData.status
+    });
 
-		if (response.status === 200) {
-			router.push("/dashboard/posts");
-		}
-	} catch (err) {
-		console.error(err);
-	} finally {
-		loading.updatePostButton = false;
-	}
+    if (response.status === 200) {
+      router.push("/dashboard/posts");
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    loading.updatePostButton = false;
+  }
 }
 
 async function postBySlug() {
-	loading.post = true;
+  loading.post = true;
 	const route = router.currentRoute.value;
 
   if (route.params.slug) {
     try {
       const slug = route.params.slug.toString();
+      console.log('Fetching post with slug:', slug); // Debugging log
       const response = await getPostBySlug(slug);
+      console.log('API response:', response.data); // Debugging log
 
       Object.assign(postData, response.data.post);
+      status.search = formatStatus(postData.status); // Set the initial status search value
       loading.post = false;
     } catch (err) {
       console.error(err);
@@ -267,55 +310,93 @@ async function postBySlug() {
 
 async function suggestBoard(event: any) {
   const name = event.target.value;
-	if (!name) {
-		boards.search = "";
-		boards.suggestions = []
-		return;
-	}
+  if (!name) {
+    boards.search = "";
+    boards.suggestions = []
+    return;
+  }
 
-	try {
-		const response = await searchBoard(name);
-		boards.suggestions = response.data.boards;
-	} catch (err) {
-		console.error(err);
-	}
+  try {
+    const response = await searchBoard(name);
+    boards.suggestions = response.data.boards;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 async function suggestRoadmap(event: any) {
   const name = event.target.value;
-	if (!name) {
-		roadmaps.search = "";
-		roadmaps.suggestions = []
-		return;
-	}
+  if (!name) {
+    roadmaps.search = "";
+    roadmaps.suggestions = []
+    return;
+  }
 
-	try {
-		const response = await searchRoadmap(name);
-		roadmaps.suggestions = response.data.roadmaps;
-	} catch (err) {
-		console.error(err);
-	}
+  try {
+    const response = await searchRoadmap(name);
+    roadmaps.suggestions = response.data.roadmaps;
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 function selectBoard(index: number) {
-	const item = boards.suggestions[index];
+  const item = boards.suggestions[index];
 
   Object.assign(postData.board, item)
-	boards.search = "";
-	boards.suggestions = []
+  boards.search = "";
+  boards.suggestions = []
 }
 
 function selectRoadmap(index: number) {
-	const item = roadmaps.suggestions[index];
+  const item = roadmaps.suggestions[index];
 
   Object.assign(postData.roadmap, item)
-	roadmaps.search = "";
-	roadmaps.suggestions = []
+  roadmaps.search = "";
+  roadmaps.suggestions = []
+}
+
+function selectStatus(item: { key: string, value: string }) {
+  postData.status = item.key;
+  status.search = item.value;
+  showStatusDropdown.value = false;
+}
+
+function formatStatus(status: string | undefined): string {
+  if (!status) return '';
+  const option = statusOptions.find(option => option.key === status);
+  return option ? option.value : '';
+}
+
+function populateStatusDropdown() {
+  showStatusDropdown.value = true;
+  filteredStatusOptions.value = statusOptions;
+}
+
+function filterStatusOptions(event: any) {
+  console.log("I am hit")
+  const search = event.target.value.toLowerCase();
+  filteredStatusOptions.value = statusOptions.filter(option =>
+    option.value.toLowerCase().includes(search)
+  );
+  populateStatusDropdown();
 }
 
 onMounted(() => postBySlug())
 
 useHead({
-	title: () => `${postData.title ? `${postData.title} • `: ''}Post • Dashboard`
+  title: () => `${postData.title ? `${postData.title} • `: ''}Post • Dashboard`
 })
 </script>
+
+<style scoped>
+.status-option {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.status-option:hover {
+  background-color: #f0f0f0;
+}
+</style>

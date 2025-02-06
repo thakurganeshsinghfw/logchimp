@@ -24,23 +24,25 @@ exports.filterPost = async (req, res) => {
     const { rows: response } = await database.raw(
       `
         SELECT
-          "postId",
-          "title",
-          "slug",
-          "boardId",
-          "roadmap_id",
-          "contentMarkdown",
-          "createdAt"
-        FROM
-          posts
-        ${
-          boardId
-            ? `WHERE "boardId" IN (${boardId.map((item) => {
-                return `'${item}'`;
-              })})`
-            : ""
-        }
-        ${roadmapId ? "WHERE roadmap_id = :roadmapId" : ""}
+        "postId",
+        "title",
+        "slug",
+        "boardId",
+        "roadmap_id",
+        "contentMarkdown",
+        "createdAt",
+        "status"
+      FROM
+        posts
+      ${
+        boardId && roadmapId
+          ? `WHERE "boardId" IN (${boardId.map((item) => `'${item}'`).join(", ")}) AND roadmap_id = :roadmapId`
+          : boardId
+          ? `WHERE "boardId" IN (${boardId.map((item) => `'${item}'`).join(", ")})`
+          : roadmapId
+          ? "WHERE roadmap_id = :roadmapId"
+          : ""
+      }
         ORDER BY "createdAt" ${created}
         LIMIT :limit
         OFFSET :offset;

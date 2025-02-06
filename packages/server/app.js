@@ -31,9 +31,9 @@ const swaggerOptions = {
   swaggerDefinition: {
     openapi: "3.0.0",
     info: {
-      title: "Feedback Hub API Docs",
+      title: "Feedback 360 - API Docs",
       version: "0.0.1",
-      description: "API documentation for Feedback Hub",
+      description: "API documentation for Feedback 360 - \n\nFeedback 360 is a step toward creating a robust feedback ecosystem, envisioned to become what IdeaExchange is for Salesforce. \n\nIt bridges the gap between the developer community and product teams by offering a streamlined and transparent feedback loop. Currently, the Ideas section in the Freshworks Developer Community allows users to post suggestions, but it falls short in providing comprehensive visibility to internal stakeholders and external members. Additionally, manually creating advocacy items and updating the status of ideas is labor-intensive and prone to delays, leaving the community disengaged. \n\nBy closing the feedback loop and fostering collaboration, Feedback 360 lays the foundation for a scalable, community-driven feedback platform that ensures alignment between user needs and product goals—on track to becoming the IdeaExchange of Freshworks.",
     },
     servers: [
       {
@@ -57,7 +57,7 @@ const swaggerOptions = {
     security: [{ bearerAuth: [] }],
   },
   apis: ['./routes/v1/*.js'],
-  customSiteTitle: 'Feedback Hub API Docs',
+  customSiteTitle: 'Feedback 360 - API Docs',
 };
 
 
@@ -78,7 +78,7 @@ app.use(
   swaggerUi.setup(swaggerSpec, {
     // explorer: true,
     customCssUrl: "/api-docs/swagger-ui.css",
-    customSiteTitle: "Feedback Hub API Docs",
+    customSiteTitle: "Feedback 360 - API Docs",
     customfavIcon: "/api-docs/FRSH.png", // Path to your favicon
     swaggerOptions: {
       customfavIcon: "/api-docs/FRSH.png", // Path to your favicon

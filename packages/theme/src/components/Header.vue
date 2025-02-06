@@ -26,6 +26,12 @@
                   </template>
                   Settings
                 </dropdown-item>
+                <dropdown-item @click="activities">
+                  <template #icon>
+                    <activities-icon />
+                  </template>
+                  Activities
+                </dropdown-item>
                 <dropdown-spacer />
                 <dropdown-item @click="userStore.logout">
                   <template #icon>
@@ -64,6 +70,7 @@ import { computed } from "vue";
 import {
   LayoutDashboard as DashboardIcon,
   Settings as SettingsIcon,
+  Activity as ActivitiesIcon,
   LogOut as LogoutIcon
 } from "lucide-vue";
 
@@ -95,6 +102,10 @@ function openDashboard() {
 
 function settings() {
 	router.push("/settings");
+}
+
+function activities() {
+	router.push("/activities");
 }
 
 const showVersion = computed(() => {

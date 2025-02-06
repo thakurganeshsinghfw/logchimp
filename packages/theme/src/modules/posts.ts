@@ -1,4 +1,4 @@
-// packges
+// packages
 import axios from "axios";
 
 // store
@@ -13,11 +13,13 @@ export interface PostType {
   contentMarkdown?: string;
   createdAt: string;
   updatedAt: string;
+  status?: string; // Added status field
 }
 
 interface GetPostArgs extends ApiPaginationType {
   boardId?: string[];
   roadmapId?: string;
+  userId?: string;
 }
 
 interface CreatePostArgs {
@@ -31,6 +33,7 @@ export interface UpdatePostArgs extends CreatePostArgs {
   userId: string;
   boardId?: string;
   roadmapId?: string;
+  status?: string; // Added status field
 }
 
 interface PostActivityArgs {
@@ -95,6 +98,7 @@ export const getPosts = async ({
   sort = "DESC",
   boardId = [],
   roadmapId = "",
+  userId = "",
 }: GetPostArgs) => {
   const { getUserId } = useUserStore();
 
@@ -105,7 +109,7 @@ export const getPosts = async ({
       page,
       limit,
       created: sort,
-      userId: getUserId,
+      userId,
       boardId,
       roadmapId,
     },

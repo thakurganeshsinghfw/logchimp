@@ -16,6 +16,7 @@ exports.updatePost = async (req, res) => {
   const contentMarkdown = req.body.contentMarkdown;
   const boardId = validUUID(req.body.boardId) || undefined;
   const roadmapId = validUUID(req.body.roadmapId) || undefined;
+  const status = req.body.status;
 
   const checkPermission = permissions.includes("post:update");
   if (!checkPermission && userId !== authorId) {
@@ -41,6 +42,7 @@ exports.updatePost = async (req, res) => {
         boardId,
         roadmap_id: roadmapId,
         updatedAt: new Date().toJSON(),
+        status,
       })
       .from("posts")
       .where({

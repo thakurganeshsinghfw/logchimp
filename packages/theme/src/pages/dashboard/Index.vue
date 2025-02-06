@@ -93,7 +93,7 @@ async function getRecentPosts() {
 	try {
 		const response = await getPosts({
 			page: 1,
-			limit: 4,
+			limit: 10,
 			sort: "DESC"
 		});
 
@@ -109,7 +109,7 @@ async function getBoards() {
 	try {
 		const response = await getAllBoards({
 			page: 1,
-			limit: 4,
+			limit: 5,
 			sort: "DESC"
 		});
 

@@ -10826,6 +10826,7 @@
   content: url('/packages/server/public/api-docs/freshworks.svg');
 }
 .swagger-ui .topbar .topbar-wrapper {
+  content: url('/api-docs/freshworks_dark_logo.svg');
   align-items: center;
   display: flex;
   flex-wrap: wrap;

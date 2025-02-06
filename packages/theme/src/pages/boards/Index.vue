@@ -7,7 +7,7 @@
         </div>
         <div class="board-body">
           <p style="font-size: larger;"><i class="fas fa-thumbtack"></i> Posts: {{ board.post_count }}</p>
-          <a :href="board.url" class="board-link">View Board</a>
+          <a :href="`/boards/${board.url}`" class="board-link">View Board</a>
         </div>
       </div>
     </div>

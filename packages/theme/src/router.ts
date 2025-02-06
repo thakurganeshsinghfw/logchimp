@@ -52,6 +52,11 @@ const routes = [
         component: () => import("./pages/Settings.vue"),
       },
       {
+        path: "activities",
+        name: "User Activites",
+        component: () => import("./pages/Activities.vue"),
+      },
+      {
         path: "posts/:slug",
         name: "Posts view",
         component: () => import("./pages/posts/_slug/Index.vue"),

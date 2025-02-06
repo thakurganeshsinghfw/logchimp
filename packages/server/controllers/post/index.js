@@ -54,7 +54,7 @@ const getAllCategories = async (req, res) => {
 module.exports = {
   ...create,
   ...filterPost,
-  ...postBySlug,
+  postBySlug,
   ...updatePost,
   ...deleteById,
   activity,

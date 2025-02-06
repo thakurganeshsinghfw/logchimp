@@ -13,8 +13,19 @@
             <router-link data-test="post-link" :to="`/posts/${post.slug}`">
               <h6>{{ post.title }}</h6>
             </router-link>
+            <span v-if="!isExpanded">
+              {{ useTrim(post.contentMarkdown, 60) }}....
+              <br/>
+            </span>
             <span v-if="!isExpanded" data-test="post-board-name" class="post-card-board">
-              {{ post.board.name }}
+              <b>{{ post.board.name }}</b>
+            </span>
+            <span v-if="!isExpanded" data-test="post-status" :class="['post-card-status', statusClass(post.status)]">
+              {{ formatStatus(post.status) }}
+            </span>
+            <span v-if="!isExpanded" :datetime="post.createdAt"
+              :title="dayjs(post.createdAt).format('dddd, DD MMMM YYYY hh:mm')" class="post-date" style="margin-left: 20px;">
+              <br/><b>{{ dayjs(post.createdAt).fromNow() }}</b>
             </span>
             <time v-else data-test="post-date" :datetime="post.createdAt"
               :title="dayjs(post.createdAt).format('dddd, DD MMMM YYYY hh:mm')" class="post-date">
@@ -26,13 +37,18 @@
           </div>
         </div>
         <p v-if="isExpanded" data-test="post-card-description" class="post-card-description">
-          {{ useTrim(post.contentMarkdown, 120) }}
+          {{ useTrim(post.contentMarkdown, 180) }}
         </p>
       </div>
     </div>
     <div v-if="isExpanded" data-test="post-card-extra" class="post-card-extra">
       <AvatarStack :avatars="post.voters.votes" :total-count="post.voters.votesCount" />
-      <BoardBadge :show-board="true" :name="post.board.name" :color="post.board.color" :url="post.board.url" />
+      <div class="post-card-extra-details">
+        <BoardBadge :show-board="true" :name="post.board.name" :color="post.board.color" :url="post.board.url" />
+        <span data-test="post-status-expanded" :class="['post-card-status', statusClass(post.status)]">
+          {{ formatStatus(post.status) }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -71,6 +87,27 @@ function updateVoters(voters: VoteEventType) {
 function toggleExpanded() {
   isExpanded.value = !isExpanded.value;
 }
+
+function formatStatus(status: string): string {
+  return status.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function statusClass(status: string): string {
+  switch (status.toLowerCase()) {
+    case 'submitted':
+      return 'status-submitted';
+    case 'prioritised':
+      return 'status-prioritised';
+    case 'in development':
+      return 'status-in-development';
+    case 'resolved':
+      return 'status-resolved';
+    case 'not implementing':
+      return 'status-not-implementing';
+    default:
+      return '';
+  }
+}
 </script>
 
 <style lang='sass'>
@@ -100,8 +137,31 @@ function toggleExpanded() {
 .post-card-board
   text-transform: uppercase
   font-size: 0.875rem
+  font-weight: 700
+  color: var(--color-gray-40)
+
+.post-card-status
+  font-size: 0.875rem
   font-weight: 500
-  color: var(--color-gray-70)
+  margin-left: 10px
+  padding: 0.25rem 0.5rem
+  border-radius: 0.25rem
+  background-color: var(--color-gray-95)
+  &.status-submitted
+    background-color: blue
+    color: white
+  &.status-prioritised
+    background-color: orange
+    color: white
+  &.status-in-development
+    background-color: purple
+    color: white
+  &.status-resolved
+    background-color: green
+    color: white
+  &.status-not-implementing
+    background-color: red
+    color: white
 
 .post-card-section
   display: flex
@@ -130,6 +190,10 @@ function toggleExpanded() {
   border-top: 1px solid var(--color-gray-95)
   display: flex
   align-items: center
+
+  .post-card-extra-details
+    display: flex
+    align-items: center
 
   .board-badge
     margin-left: auto
