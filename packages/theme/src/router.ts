@@ -37,6 +37,11 @@ const routes = [
         component: () => import("./pages/analytics/Index.vue"),
       },
       {
+        path: "leaderboard",
+        name: "Leaderboard",
+        component: () => import("./pages/analytics/LeaderBoard.vue"),
+      },
+      {
         path: "roadmaps",
         name: "Roadmaps",
         component: () => import("./pages/Roadmaps.vue"),

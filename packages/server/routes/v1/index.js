@@ -12,6 +12,7 @@ const settings = require("./settings");
 const roadmaps = require("./roadmaps");
 const roles = require("./roles");
 const analytics = require("./analytics");
+const leaderboard = require("./leaderboard");
 
 
 router.use(
@@ -25,6 +26,7 @@ router.use(
   roadmaps,
   roles,
   analytics,
+  leaderboard,
 );
 
 module.exports = router;

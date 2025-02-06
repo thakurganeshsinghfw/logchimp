@@ -17,15 +17,15 @@
       <div class="analytics-cards">
         <div class="card">
           <h2>Total Posts</h2>
-          <h4>{{ analytics.totalPosts }}</h4>
+          <p>{{ analytics.totalPosts }}</p>
         </div>
         <div class="card">
           <h2>Total Comments</h2>
-          <h4>{{ analytics.totalComments }}</h4>
+          <p>{{ analytics.totalComments }}</p>
         </div>
         <div class="card">
           <h2>Total Upvotes</h2>
-          <h4>{{ analytics.totalUpvotes }}</h4>
+          <p>{{ analytics.totalUpvotes }}</p>
         </div>
         <div class="card">
           <h2>Engagement Rate</h2>

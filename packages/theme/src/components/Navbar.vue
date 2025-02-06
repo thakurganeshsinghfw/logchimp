@@ -40,6 +40,14 @@
 				Analytics
 			</div>
 		</router-link>
+		<router-link to="/leaderboard" class="navbar-item">
+			<div class="navbar-item-icon">
+        <leaderboard-icon />
+			</div>
+			<div class="navbar-item-content">
+				Leaderboard
+			</div>
+		</router-link>
 	</div>
 </template>
 
@@ -49,6 +57,8 @@ import { Home as HomeIcon, Columns as BoardIcon, SearchIcon, PlaneTakeoffIcon } 
 
 // icons
 import RoadmapIcon from "./icons/Roadmap.vue";
+import LeaderboardIcon from "./icons/Leaderboard.vue";
+
 </script>
 
 <style lang='sass'>

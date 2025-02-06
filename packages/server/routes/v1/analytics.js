@@ -12,7 +12,7 @@ const analyticsController = require("../../controllers/analytics/analytics");
 
 /**
  * @swagger
- * /analytics:
+ * /api/v1/analytics:
  *   get:
  *     summary: Get analytics data
  *     tags: [Analytics API]

@@ -89,7 +89,7 @@ const fetchBoards = async () => {
 
 const fetchRoadmaps = async () => {
   try {
-    const response = await getAllRoadmaps({ page: 1, limit: 10, sort: "DESC" });
+    const response = await getAllRoadmaps();
     console.log('Roadmaps API response:', response.data); // Debugging log
     roadmaps.value = response.data.roadmaps; // Access the roadmaps property
     console.log('Roadmaps ref:', roadmaps.value); // Debugging log
@@ -178,6 +178,13 @@ onMounted(() => {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+}
+
+.filter-select option {
+  background-color: #fff;
+  color: #333;
 }
 
 .loading {

@@ -190,5 +190,4 @@ router.get("/categories", post.getAllCategories);
  */
 router.post('/upload', uploadController.upload);
 
-
 module.exports = router;
