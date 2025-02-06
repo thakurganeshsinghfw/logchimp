@@ -1,8 +1,12 @@
 <template>
   <div class="post-card">
     <div class="post-card-main">
-      <Vote :post-id="post.postId" :votes-count="post.voters.votesCount" :is-voted="post.voters.viewerVote"
-        @update-voters="updateVoters" />
+      <Vote
+        :post-id="post.postId"
+        :votes-count="post.voters.votesCount"
+        :is-voted="post.voters.viewerVote"
+        @update-voters="updateVoters"
+      />
       <div style="width: 100%">
         <div class="post-card-section">
           <div>
@@ -18,26 +22,27 @@
             </time>
           </div>
           <div data-test="post-card-toggle" class="post-card-toggle" @click="toggleExpanded">
-            <arrow-top-icon :style="{ transform: isExpanded ? 'rotateX(180deg)' : '' }" />
+            <ArrowTopIcon :style="{ transform: isExpanded ? 'rotateX(180deg)' : '' }" />
+          </div>
         </div>
+        <p v-if="isExpanded" data-test="post-card-description" class="post-card-description">
+          {{ useTrim(post.contentMarkdown, 120) }}
+        </p>
       </div>
-      <p v-if="isExpanded" data-test="post-card-description" class="post-card-description">
-        {{ useTrim(post.contentMarkdown, 120) }}
-      </p>
+    </div>
+    <div v-if="isExpanded" data-test="post-card-extra" class="post-card-extra">
+      <AvatarStack :avatars="post.voters.votes" :total-count="post.voters.votesCount" />
+      <BoardBadge :show-board="true" :name="post.board.name" :color="post.board.color" :url="post.board.url" />
     </div>
   </div>
-  <div v-if="isExpanded" data-test="post-card-extra" class="post-card-extra">
-    <avatar-stack :avatars="post.voters.votes" :total-count="post.voters.votesCount" />
-    <board-badge :show-board="true" :name="post.board.name" :color="post.board.color" :url="post.board.url" />
-  </div>
-</div></template>
+</template>
 
 <script setup lang="ts">
-// pacakges
+// packages
 import { ref } from "vue";
 import { ChevronUp as ArrowTopIcon } from "lucide-vue";
-import dayjs from "dayjs"
-import relativeTime from "dayjs/plugin/relativeTime"
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
 import { useTrim } from "../../hooks";
 
@@ -53,7 +58,7 @@ const props = defineProps({
     type: Object,
     required: true
   }
-})
+});
 
 const isExpanded = ref(false);
 const postData = ref(props.post);
@@ -70,56 +75,62 @@ function toggleExpanded() {
 
 <style lang='sass'>
 .post-card
-	background-color: var(--color-white)
-	margin-bottom: 0.75rem
-	border-radius: var(--border-radius-default)
+  background-color: var(--color-white)
+  margin-bottom: 0.75rem
+  border-radius: var(--border-radius-default)
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1)
+  transition: transform 0.3s, box-shadow 0.3s
 
-	&:last-child
-		margin-bottom: 0
+  &:hover
+    transform: translateY(-5px)
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2)
+
+  &:last-child
+    margin-bottom: 0
 
 .post-card-main
-	padding: 0.75rem
-	display: flex
-	align-items: self-start
+  padding: 0.75rem
+  display: flex
+  align-items: self-start
 
-	h5
-		color: var(--color-text-black)
-		margin-bottom: 0.125em
+  h5
+    color: var(--color-text-black)
+    margin-bottom: 0.125em
 
 .post-card-board
-	text-transform: uppercase
-	font-size: 0.875rem
-	font-weight: 500
-	color: var(--color-gray-70)
+  text-transform: uppercase
+  font-size: 0.875rem
+  font-weight: 500
+  color: var(--color-gray-70)
 
 .post-card-section
-	display: flex
-	align-items: center
-	width: 100%
+  display: flex
+  align-items: center
+  width: 100%
 
 .post-card-toggle
-	margin-left: auto
-	padding: 0.125rem
-	cursor: pointer
-	background-color: var(--color-gray-95)
-	user-select: none
-	border-radius: 1rem
+  margin-left: auto
+  padding: 0.125rem
+  cursor: pointer
+  background-color: var(--color-gray-95)
+  user-select: none
+  border-radius: 1rem
 
-	svg
-		display: block
-		stroke: var(--color-gray-60)
+  svg
+    display: block
+    stroke: var(--color-gray-60)
 
 .post-card-description
-	color: var(--color-gray-40)
-	font-size: 0.875rem
-	margin-top: 0.5rem
+  color: var(--color-gray-40)
+  font-size: 0.875rem
+  margin-top: 0.5rem
 
 .post-card-extra
-	padding: 0.75rem
-	border-top: 1px solid var(--color-gray-95)
-	display: flex
-	align-items: center
+  padding: 0.75rem
+  border-top: 1px solid var(--color-gray-95)
+  display: flex
+  align-items: center
 
-	.board-badge
-		margin-left: auto
+  .board-badge
+    margin-left: auto
 </style>

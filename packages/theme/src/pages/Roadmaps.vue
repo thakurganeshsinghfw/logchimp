@@ -1,96 +1,112 @@
 <template>
-  <div>
-    <div v-if="roadmaps.length > 0" class="roadmap">
-      <roadmap-column
-        v-for="roadmap in roadmaps"
-        :key="roadmap.id"
-        class="roadmap-view"
-        :roadmap="roadmap"
-      />
+  <div class="roadmaps-container">
+    <h1>Roadmaps</h1>
+    <div v-if="loading" class="loading">Loading...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else class="roadmap-tabs">
+      <div class="tabs">
+        <div
+          v-for="roadmap in roadmaps"
+          :key="roadmap.id"
+          :class="['tab', { active: selectedRoadmapId === roadmap.id }]"
+          @click="selectRoadmap(roadmap.id)"
+        >
+          {{ roadmap.name }}
+        </div>
+      </div>
+      <div class="tab-content">
+        <RoadmapColumn v-if="selectedRoadmap" :roadmap="selectedRoadmap" />
+      </div>
     </div>
-
-    <infinite-scroll @infinite="getRoadmaps" :state="state">
-      <template #no-results>
-        <p>There are no roadmaps.</p>
-      </template>
-    </infinite-scroll>
   </div>
 </template>
 
-<script lang="ts">
-export default {
-	name: "Roadmaps",
-}
-</script>
-
 <script setup lang="ts">
-import { ref } from "vue";
-import { useHead } from "@vueuse/head";
+import { ref, onMounted, computed } from 'vue';
+import axios from 'axios';
+import RoadmapColumn from '../components/roadmap/RoadmapColumn.vue';
 
-// modules
-import { getAllRoadmaps } from "../modules/roadmaps";
-import { useSettingStore } from "../store/settings"
+const roadmaps = ref<any[]>([]);
+const loading = ref(false);
+const error = ref<string | null>(null);
+const selectedRoadmapId = ref<string | null>(null);
 
-// components
-import InfiniteScroll, { InfiniteScrollStateType } from "../components/ui/InfiniteScroll.vue";
-import RoadmapColumn from "../components/roadmap/RoadmapColumn.vue";
-
-const { get: siteSettings } = useSettingStore()
-// TODO: Add TS types
-const roadmaps = ref<any>([])
-const page = ref<number>(1)
-const state = ref<InfiniteScrollStateType>();
-
-interface Roadmap {
-  id: string;
-  name: string;
-  url: string;
-  color: string;
-}
+const selectedRoadmap = computed(() => {
+  return roadmaps.value.find(roadmap => roadmap.id === selectedRoadmapId.value) || null;
+});
 
 async function getRoadmaps() {
-  state.value = "LOADING";
-
+  loading.value = true;
+  error.value = null;
   try {
-    const response = await getAllRoadmaps();
-
-    // Check if the retrieved roadmaps are unique
-    const uniqueRoadmaps: Roadmap[] = response.data.roadmaps.filter((newRoadmap: Roadmap) => {
-      return !roadmaps.value.some((existingRoadmap: Roadmap) => existingRoadmap.id === newRoadmap.id);
-    });
-
-    // Append only unique roadmaps to the existing ones
-    roadmaps.value.push(...uniqueRoadmaps);
-
-    // Update the state based on the retrieval result
-    if (uniqueRoadmaps.length > 0) {
-      page.value += 1;
-      state.value = "LOADED";
-    } else {
-      state.value = "COMPLETED";
+    const response = await axios.get('/api/v1/roadmaps');
+    roadmaps.value = response.data.roadmaps;
+    if (roadmaps.value.length > 0) {
+      selectedRoadmapId.value = roadmaps.value[0].id;
     }
   } catch (err) {
-    console.error(err);
-    state.value = "ERROR";
+    error.value = 'Failed to fetch roadmaps.';
+    console.error('Error fetching roadmaps:', err);
+  } finally {
+    loading.value = false;
   }
 }
 
-useHead({
-	title: "Roadmaps",
-	meta: [
-		{
-			name: "og:title",
-			content: () => `Roadmaps • ${siteSettings.title}`
-		}
-	]
-})
+function selectRoadmap(roadmapId: string) {
+  selectedRoadmapId.value = roadmapId;
+}
+
+onMounted(() => {
+  getRoadmaps();
+});
 </script>
 
-<style lang='sass'>
-.roadmap
-	display: grid
-	grid-auto-flow: column
-	grid-auto-columns: minmax(22rem, 24rem)
-	grid-column-gap: 1rem
-	overflow-x: scroll
+<style scoped lang="sass">
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css')
+
+.roadmaps-container
+  padding: 20px
+  max-width: 1200px
+  margin: 0 auto
+  font-family: Arial, sans-serif
+
+h1
+  text-align: center
+  margin-bottom: 20px
+  font-size: 2.5em
+  color: #333
+
+.loading, .error
+  text-align: center
+  font-size: 1.2em
+  color: #555
+
+.roadmap-tabs
+  display: flex
+
+.tabs
+  flex: 0 0 200px
+  display: flex
+  flex-direction: column
+  gap: 10px
+  border-right: 1px solid #ddd
+  padding-right: 10px
+
+.tab
+  padding: 10px
+  cursor: pointer
+  background-color: #f9f9f9
+  border-radius: 4px
+  transition: background-color 0.3s
+
+.tab:hover
+  background-color: #e9e9e9
+
+.tab.active
+  background-color: #007bff
+  color: white
+
+.tab-content
+  flex: 1
+  padding-left: 20px
 </style>

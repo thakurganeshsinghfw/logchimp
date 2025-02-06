@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <div v-if="boards.length > 0" class="boards-lists">
-      <board-item
-        v-for="board in boards"
-        :key="board.boardId"
-        :name="board.name"
-        :color="board.color"
-        :url="board.url"
-        :post-count="Number(board.post_count)"
-      />
+  <div class="boards-container">
+    <div v-if="boards.length > 0" class="boards-list">
+      <div v-for="board in boards" :key="board.boardId" class="board-card" :style="{ borderColor: `#${board.color}` }">
+        <div class="board-header" :style="{ backgroundColor: `#${board.color}` }">
+          <h4>{{ board.name }}</h4>
+        </div>
+        <div class="board-body">
+          <p style="font-size: larger;"><i class="fas fa-thumbtack"></i> Posts: {{ board.post_count }}</p>
+          <a :href="board.url" class="board-link">View Board</a>
+        </div>
+      </div>
     </div>
-
     <infinite-scroll @infinite="getBoards" :state="state">
       <template #no-results>
         <p>There are no boards.</p>
@@ -19,82 +19,118 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-	name: "Boards"
-}
-</script>
-
 <script setup lang="ts">
-// packages
-import { ref } from "vue";
-import { useHead } from "@vueuse/head";
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-// modules
-import { getPublicBoards } from "../../modules/boards";
-import { useSettingStore } from "../../store/settings"
-
-// components
-import InfiniteScroll, { InfiniteScrollStateType } from "../../components/ui/InfiniteScroll.vue";
-import BoardItem from "../../components/board/BoardItem.vue";
-
-const { get: siteSettings } = useSettingStore()
-
-// TODO: Add TS types
-const boards = ref<any>([])
-const page = ref<number>(1)
-const state = ref<InfiniteScrollStateType>()
-
-async function getBoards() {
-	try {
-		const response = await getPublicBoards({
-      page: page.value,
-      sort: "DESC"
-    });
-
-		if (response.data.boards.length) {
-			boards.value.push(...response.data.boards);
-			page.value += 1;
-			state.value = "LOADED"
-		} else {
-			state.value = "COMPLETED";
-		}
-	} catch (error) {
-		console.error(error);
-		state.value = "ERROR"
-	}
+interface Board {
+  boardId: string;
+  name: string;
+  color: string;
+  url: string;
+  post_count: number;
 }
 
-useHead({
-	title: "Boards",
-	meta: [
-		{
-			name: "og:title",
-			content: () => `Boards • ${siteSettings.title}`
-		}
-	]
-})
+const boards = ref<Board[]>([]);
+const state = ref({ loading: false, finished: false });
+
+const getBoards = async () => {
+  if (state.value.loading || state.value.finished) return;
+  state.value.loading = true;
+  console.log('Fetching boards...'); // Debugging log
+  try {
+    const response = await axios.get('/api/v1/boards');
+    console.log('API response:', response.data); // Debugging log
+    if (response.data.boards.length === 0) {
+      state.value.finished = true;
+    } else {
+      boards.value = [...boards.value, ...response.data.boards]; // Ensure reactivity
+    }
+  } catch (err) {
+    console.error('Error fetching boards:', err);
+  } finally {
+    state.value.loading = false;
+  }
+};
+
+onMounted(() => {
+  getBoards();
+});
 </script>
 
-<style lang='sass'>
-.boards-lists
-	display: grid
-	grid-template-columns: 1fr
-	grid-column-gap: 1rem
-	grid-row-gap: 1rem
-	justify-content: space-between
-	margin-bottom: 4rem
+<style scoped>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
 
-@media (min-width: 768px)
-	.boards-lists
-		grid-template-columns: repeat(auto-fill, 48%)
-		grid-row-gap: 1.5rem
+.boards-container {
+  padding: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
 
-@media (min-width: 992px)
-	.boards-lists
-		grid-template-columns: repeat(auto-fill, 30%)
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 2.5em;
+  color: #333;
+}
 
-@media (min-width: 1200px)
-	.boards-lists
-		grid-template-columns: repeat(auto-fill, 23%)
+.boards-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.board-card {
+  border: 1px solid;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  background-color: white;
+}
+
+.board-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.board-header {
+  padding: 5px;
+  color: white;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.board-body {
+  padding: 10px;
+  text-align: center;
+}
+
+.board-body p {
+  margin: 0;
+  font-size: 1em;
+  color: #555;
+}
+
+.board-body i {
+  margin-right: 5px;
+  color: #007bff;
+}
+
+.board-link {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 8px 16px;
+  background-color: #080808;
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.board-link:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
 </style>
